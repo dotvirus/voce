@@ -16,7 +16,7 @@ export const testDefinitionSchema = yxc.object({
   url: orFunction(yxc.string()),
   method: yxc.string().optional(),
   status: yxc.number().natural(),
-  data: orYxcHandler(yxc.object().arbitrary()).optional().nullable(),
+  data: orYxcHandler(yxc.any()).optional().nullable(),
   onSuccess: functionType.optional(),
   query: yxc.record(yxc.string()).optional(),
   headers: yxc.record(yxc.string()).optional(),

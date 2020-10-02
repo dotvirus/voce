@@ -11,5 +11,10 @@ export default function (_ctx: any) {
       title: "GET google",
       status: 200,
     },
+    {
+      url: "https://google.com",
+      title: "GET google",
+      status: 2040,
+    },
   ];
 }

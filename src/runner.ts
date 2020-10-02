@@ -2,8 +2,11 @@ import log from "./log";
 import { resolveTestDefinition, TestDefinition } from "./test_schema";
 import haxan from "haxan";
 import { Handler, AnyHandler, createExecutableSchema } from "@dotvirus/yxc";
-import deepEqual from "deep-equal";
 import ora from "ora";
+import chalk from "chalk";
+import variableDiff from "variable-diff";
+import { relative } from "path";
+import args from "./args";
 
 class TestError extends Error {
   title: string;
@@ -23,7 +26,13 @@ function resolveTestDefinitionData(data: unknown): Handler {
   if (data instanceof Handler) {
     return data;
   } else {
-    return new AnyHandler().rule((v) => deepEqual(v, data));
+    return new AnyHandler().rule((v) => {
+      const result = variableDiff(v, data);
+      if (result.changed) {
+        console.log(result.text);
+      }
+      return !result.changed;
+    });
   }
 }
 
@@ -50,13 +59,11 @@ async function requireTestDefinition(
 
 async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
   const workflow = await requireTestDefinition(file, ctx);
-  console.log(`\n${file}\n`);
+  console.log(chalk.blueBright(`\nRunning ${relative(process.cwd(), file)}\n`));
 
   for (let i = 0; i < workflow.length; i++) {
     const testCase = workflow[i];
-    const loader = ora(
-      `[${i + 1}/${workflow.length}] Running ${testCase.title}`,
-    );
+    const loader = ora(`[${i + 1}/${workflow.length}] ${testCase.title}`);
 
     const url = resolveTestDefinitionUrl(testCase.url);
     const method = testCase.method || "GET";
@@ -92,7 +99,6 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
       const result = createExecutableSchema(testDataHandler)(res.data);
       if (!result.ok) {
         loader.fail();
-        console.warn(result.errors);
         throw new TestError(testCase.title, `Response body not as expected`);
       }
       log("Res body OK");
@@ -116,8 +122,12 @@ export async function runTests(files: Array<string>) {
         numTests: files.length,
       });
     } catch (error) {
+      if (args.bail) {
+        console.warn(chalk.yellow("\nBailing tests"));
+        process.exit(1);
+      }
       if (error instanceof TestError) {
-        console.warn(`${error.title}: ${error.message}`);
+        console.warn(chalk.red(`\n${error.title}: ${error.message}`));
       } else {
         throw error;
       }

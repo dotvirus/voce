@@ -9,4 +9,8 @@ export default yargs
       type: "array",
       default: [],
     },
+    bail: {
+      type: "boolean",
+      default: false,
+    },
   }).argv;
