@@ -13,4 +13,8 @@ export default yargs
       type: "boolean",
       default: false,
     },
+    timeout: {
+      type: "number",
+      default: 15000,
+    },
   }).argv;

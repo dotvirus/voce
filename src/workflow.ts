@@ -11,7 +11,7 @@ function orYxcHandler(handler: Handler) {
   return yxc.union([yxcHandlerType, handler]);
 }
 
-export const testDefinitionSchema = yxc.object({
+export const workflowStepSchema = yxc.object({
   title: yxc.string(),
   url: orFunction(yxc.string()),
   method: yxc.string().optional(),
@@ -19,18 +19,21 @@ export const testDefinitionSchema = yxc.object({
   data: orYxcHandler(yxc.any()).optional().nullable(),
   onSuccess: functionType.optional(),
   query: yxc.record(yxc.string()).optional(),
+  body: yxc.object().arbitrary().optional(),
   headers: yxc.record(yxc.string()).optional(),
   // TODO: response headers
 });
-export const testDefinitionSchemaArray = yxc.array(testDefinitionSchema);
 
-export type TestDefinition = Infer<typeof testDefinitionSchema>;
+export const workflowSchema = yxc.object({
+  title: yxc.string(),
+  steps: yxc.array(workflowStepSchema),
+});
 
-export function resolveTestDefinition(val: unknown): Array<TestDefinition> {
-  if (is(val, testDefinitionSchema)) {
-    return [val];
-  }
-  if (is(val, testDefinitionSchemaArray)) {
+export type Workflow = Infer<typeof workflowSchema>;
+export type WorkflowStep = Infer<typeof workflowStepSchema>;
+
+export function resolveWorkflow(val: unknown): Workflow {
+  if (is(val, workflowSchema)) {
     return val;
   }
   throw new Error("Invalid test definition");

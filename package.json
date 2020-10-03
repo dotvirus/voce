@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Typescript Eslint Ava Boilerplate",
   "main": "dist/index.js",
+  "bin": {
+    "ultra-api": "cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint src --ext .ts",

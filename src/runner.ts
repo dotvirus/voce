@@ -1,5 +1,5 @@
 import log from "./log";
-import { resolveTestDefinition, TestDefinition } from "./test_schema";
+import { resolveWorkflow, Workflow } from "./workflow";
 import haxan from "haxan";
 import { Handler, AnyHandler, createExecutableSchema } from "@dotvirus/yxc";
 import ora from "ora";
@@ -36,38 +36,46 @@ function resolveTestDefinitionData(data: unknown): Handler {
   }
 }
 
-function resolveTestDefinitionUrl(url: unknown): string {
+function resolveUrl(url: unknown): string {
   if (typeof url === "string") {
     return url;
   } else if (typeof url === "function") {
-    return resolveTestDefinitionUrl(url());
+    return resolveUrl(url());
   }
   throw new Error(`Invalid url: ${url}`);
 }
 
-async function requireTestDefinition(
+async function requireWorkflow(
   file: string,
   ctx: IRunnerContext,
-): Promise<Array<TestDefinition>> {
+): Promise<Workflow> {
   const func = require(file).default;
   if (typeof func !== "function") {
     throw new Error(`${file}: not a function`);
   }
   const returnedDefinition = await func(ctx);
-  return resolveTestDefinition(returnedDefinition);
+  return resolveWorkflow(returnedDefinition);
 }
 
 async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
-  const workflow = await requireTestDefinition(file, ctx);
-  console.log(chalk.blueBright(`\nRunning ${relative(process.cwd(), file)}\n`));
+  const workflow = await requireWorkflow(file, ctx);
+  console.log(
+    chalk.blueBright(
+      `\n${workflow.title} (${relative(process.cwd(), file)})\n`,
+    ),
+  );
 
-  for (let i = 0; i < workflow.length; i++) {
-    const testCase = workflow[i];
-    const loader = ora(`[${i + 1}/${workflow.length}] ${testCase.title}`);
+  for (let i = 0; i < workflow.steps.length; i++) {
+    const testCase = workflow.steps[i];
+    const loader = ora(`[${i + 1}/${workflow.steps.length}] ${testCase.title}`);
 
-    const url = resolveTestDefinitionUrl(testCase.url);
+    const url = resolveUrl(testCase.url);
     const method = testCase.method || "GET";
-    const resBuilder = haxan(url).method(method);
+    const resBuilder = haxan(url).method(method).timeout(args.timeout);
+
+    if (testCase.body) {
+      resBuilder.body(testCase.body);
+    }
 
     if (testCase.query) {
       for (const [key, value] of Object.entries(testCase.query)) {
