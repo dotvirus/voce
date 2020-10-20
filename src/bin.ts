@@ -13,7 +13,7 @@ if (args.register.length) {
 
 async function main() {
   log("Entry point");
-  let files = <Array<string>>args.files;
+  let files = <Array<string>>args._;
 
   if (!Array.isArray(files)) {
     console.error("No input files");

@@ -1,10 +1,10 @@
 {
-  "name": "typescript-eslint-ava-template",
-  "version": "1.0.0",
-  "description": "Typescript Eslint Ava Boilerplate",
+  "name": "@dotvirus/api-tester",
+  "version": "0.0.1",
+  "description": "API test runner (experimental)",
   "main": "dist/index.js",
   "bin": {
-    "ultra-api": "cli.js"
+    "api-tester": "cli.js"
   },
   "scripts": {
     "build": "tsc",

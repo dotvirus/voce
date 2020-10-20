@@ -1,9 +1,9 @@
 import yargs = require("yargs");
 
 export default yargs
-  .scriptName("ultra-api")
+  .scriptName("api-tester")
+  .command("$0 [files..]", "Test files")
   .version("0.0.1")
-  .command("$0 [files..]", "Count lines in path")
   .options({
     register: {
       type: "array",
