@@ -40,6 +40,8 @@ export const workflowSchema = yxc.object({
   title: yxc.string(),
   steps: yxc.array(workflowStepSchema),
 
+  baseUrl: yxc.string().optional(),
+
   onBefore: functionType.optional(),
   onAfter: functionType.optional(),
 
@@ -52,7 +54,7 @@ export const workflowSchema = yxc.object({
 
 export type WorkflowStep = {
   title: string;
-  url: string;
+  url: string | (() => string | Promise<string>);
   status: number;
   method?: string;
   reqBody?: Record<string, unknown>;
@@ -62,55 +64,51 @@ export type WorkflowStep = {
   reqHeaders?: Record<string, string>;
   resHeaders?: Record<string, string>;
 
-  onBefore: (ctx: IRunnerContext & { step: WorkflowStep }) => Promise<unknown>;
-
   todo?: boolean;
   skip?: boolean;
 
-  onSuccess: (
+  onBefore?: (ctx: IRunnerContext & { step: WorkflowStep }) => unknown;
+  onSuccess?: (
     ctx: IRunnerContext & {
       step: WorkflowStep;
       response: IHaxanResponse<unknown>;
     },
-  ) => Promise<unknown>;
-  onFail: (
+  ) => unknown;
+  onFail?: (
     ctx: IRunnerContext & {
       step: WorkflowStep;
       response: IHaxanResponse<unknown>;
     },
-  ) => Promise<unknown>;
-
-  onAfter: (
+  ) => unknown;
+  onAfter?: (
     ctx: IRunnerContext & {
       step: WorkflowStep;
       response: IHaxanResponse<unknown>;
     },
-  ) => Promise<unknown>;
+  ) => unknown;
 };
 export type Workflow = {
   title: string;
   steps: WorkflowStep[];
 
-  onBefore: (ctx: IRunnerContext) => Promise<unknown>;
-  onAfter: (ctx: IRunnerContext) => Promise<unknown>;
+  baseUrl?: string;
 
-  onBeforeEach: (
-    ctx: IRunnerContext & { step: WorkflowStep },
-  ) => Promise<unknown>;
-  onAfterEach: (
+  onBefore?: (ctx: IRunnerContext) => unknown;
+  onAfter?: (ctx: IRunnerContext) => unknown;
+  onBeforeEach?: (ctx: IRunnerContext & { step: WorkflowStep }) => unknown;
+  onAfterEach?: (
     ctx: IRunnerContext & {
       step: WorkflowStep;
       response: IHaxanResponse<unknown>;
     },
-  ) => Promise<unknown>;
-
-  onSuccess: (ctx: IRunnerContext) => Promise<unknown>;
-  onFail: (
+  ) => unknown;
+  onSuccess?: (ctx: IRunnerContext) => unknown;
+  onFail?: (
     ctx: IRunnerContext & {
       step: WorkflowStep;
       response: IHaxanResponse<unknown>;
     },
-  ) => Promise<unknown>;
+  ) => unknown;
 };
 
 export function resolveWorkflow(val: unknown): Workflow {

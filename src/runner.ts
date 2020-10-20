@@ -98,7 +98,7 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
     testCase.onBefore && (await testCase.onBefore({ ...ctx, step: testCase }));
     const loader = ora(`[${i + 1}/${workflow.steps.length}] ${testCase.title}`);
 
-    const url = resolveUrl(testCase.url);
+    const url = (workflow.baseUrl || "") + resolveUrl(testCase.url);
     const method = testCase.method || "GET";
     const resBuilder = haxan(url).method(method).timeout(args.timeout);
 

@@ -1,22 +1,25 @@
-export default function (_ctx: any) {
+import { Workflow } from "../../src/workflow";
+
+export default function (_ctx: any): Workflow {
   return {
     title: "Google",
+    baseUrl: "https://google.com",
     steps: [
       {
-        url: () => "https://google.com",
+        url: () => "/",
         title: "HEAD google",
         status: 200,
         method: "HEAD",
         todo: true,
       },
       {
-        url: "https://google.com",
+        url: "/",
         title: "GET google",
         status: 200,
       },
       {
         skip: true,
-        url: "https://google.com",
+        url: "/",
         title: "GET google",
         status: 200,
       },

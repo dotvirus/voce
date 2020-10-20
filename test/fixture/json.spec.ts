@@ -1,9 +1,12 @@
-export default function (_ctx: any) {
+import { Workflow } from "../../src/workflow";
+
+export default function (_ctx: any): Workflow {
   return {
     title: "JSON placeholder",
+    baseUrl: "https://jsonplaceholder.typicode.com",
     steps: [
       {
-        url: "https://jsonplaceholder.typicode.com/todos/1",
+        url: "/todos/1",
         title: "GET /todos/1",
         status: 200,
         resBody: {
