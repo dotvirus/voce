@@ -171,6 +171,15 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
       log("Res headers OK");
     }
 
+    if (testCase.validate) {
+      log("Running custom validation function");
+      try {
+        await testCase.validate({ ...ctx, step: testCase, response: res });
+      } catch (error) {
+        await failTest(error.message);
+      }
+    }
+
     log(`${file} OK`);
 
     log(`Success hook`);

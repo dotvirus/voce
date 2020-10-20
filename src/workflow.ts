@@ -20,10 +20,12 @@ export const workflowStepSchema = yxc.object({
   method: yxc.string().optional(),
   status: yxc.number().natural(),
   reqBody: yxc.object().arbitrary().optional(),
-  resBody: orYxcHandler(yxc.any()).optional().nullable(),
+  resBody: yxc.any().optional().nullable(),
   query: yxc.record(yxc.string()).optional(),
   reqHeaders: yxc.record(yxc.string()).optional(),
   resHeaders: orYxcHandler(yxc.record(yxc.string())).optional().nullable(),
+
+  validate: functionType.optional(),
 
   onBefore: functionType.optional(),
 
@@ -59,10 +61,17 @@ export type WorkflowStep = {
   method?: string;
   reqBody?: Record<string, unknown>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  resBody?: Record<string, unknown> | ObjectHandler<any>;
+  resBody?: any | ObjectHandler<any>;
   query?: Record<string, string>;
   reqHeaders?: Record<string, string>;
   resHeaders?: Record<string, string>;
+
+  validate?: (
+    ctx: IRunnerContext & {
+      step: WorkflowStep;
+      response: IHaxanResponse<unknown>;
+    },
+  ) => unknown;
 
   todo?: boolean;
   skip?: boolean;
