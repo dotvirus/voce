@@ -31,6 +31,9 @@ export const workflowStepSchema = yxc.object({
   onFail: functionType.optional(),
 
   onAfter: functionType.optional(),
+
+  todo: yxc.boolean().optional(),
+  skip: yxc.boolean().optional(),
 });
 
 export const workflowSchema = yxc.object({
@@ -60,6 +63,9 @@ export type WorkflowStep = {
   resHeaders?: Record<string, string>;
 
   onBefore: (ctx: IRunnerContext & { step: WorkflowStep }) => Promise<unknown>;
+
+  todo?: boolean;
+  skip?: boolean;
 
   onSuccess: (
     ctx: IRunnerContext & {

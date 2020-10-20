@@ -30,7 +30,7 @@ function resolveTestDefinitionData(data: unknown): Handler {
     return new AnyHandler().rule((v) => {
       const result = variableDiff(v, data);
       if (result.changed) {
-        console.log(result.text);
+        console.error(result.text);
       }
       return !result.changed;
     });
@@ -61,7 +61,7 @@ async function requireWorkflow(
 
 async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
   const workflow = await requireWorkflow(file, ctx);
-  console.log(
+  console.error(
     chalk.blueBright(
       `\n${workflow.title} (${relative(process.cwd(), file)})\n`,
     ),
@@ -72,6 +72,25 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
 
   for (let i = 0; i < workflow.steps.length; i++) {
     const testCase = workflow.steps[i];
+
+    if (testCase.todo) {
+      console.error(
+        chalk.cyanBright(
+          `? [${i + 1}/${workflow.steps.length}] TODO: ${testCase.title}`,
+        ),
+      );
+      continue;
+    }
+
+    if (testCase.skip) {
+      console.error(
+        chalk.yellowBright(
+          `! [${i + 1}/${workflow.steps.length}] SKIP: ${testCase.title}`,
+        ),
+      );
+      continue;
+    }
+
     log(`Before each hook`);
     workflow.onBeforeEach &&
       (await workflow.onBeforeEach({ ...ctx, step: testCase }));
@@ -166,7 +185,7 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
     loader.succeed();
   }
 
-  log(`Worflow success hook`);
+  log(`Workflow success hook`);
   workflow.onSuccess && (await workflow.onSuccess({ ...ctx }));
 
   log(`After all hook`);

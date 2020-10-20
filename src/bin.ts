@@ -14,7 +14,7 @@ if (args.register.length) {
 
 async function main() {
   log("Entry point");
-  let files = <Array<string>>args._;
+  let files = <Array<string>>args.files;
 
   log(args);
 

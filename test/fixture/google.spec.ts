@@ -7,6 +7,7 @@ export default function (_ctx: any) {
         title: "HEAD google",
         status: 200,
         method: "HEAD",
+        todo: true,
       },
       {
         url: "https://google.com",
@@ -14,9 +15,10 @@ export default function (_ctx: any) {
         status: 200,
       },
       {
+        skip: true,
         url: "https://google.com",
         title: "GET google",
-        status: 2040,
+        status: 200,
       },
     ],
   };
