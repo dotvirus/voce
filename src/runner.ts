@@ -91,12 +91,15 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
       continue;
     }
 
+    const loader = ora(
+      `[${i + 1}/${workflow.steps.length}] ${testCase.title}`,
+    ).start();
+
     log(`Before each hook`);
     workflow.onBeforeEach &&
       (await workflow.onBeforeEach({ ...ctx, step: testCase }));
     log(`Before hook`);
     testCase.onBefore && (await testCase.onBefore({ ...ctx, step: testCase }));
-    const loader = ora(`[${i + 1}/${workflow.steps.length}] ${testCase.title}`);
 
     const url = (workflow.baseUrl || "") + resolveUrl(testCase.url);
     const method = testCase.method || "GET";
