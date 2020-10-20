@@ -1,7 +1,8 @@
 import { resolve } from "path";
-import { runTests } from "./runner";
+
 import args from "./args";
 import log from "./log";
+import { runTests } from "./runner";
 import { checkFiles } from "./util";
 
 if (args.register.length) {
@@ -15,12 +16,9 @@ async function main() {
   log("Entry point");
   let files = <Array<string>>args._;
 
-  if (!Array.isArray(files)) {
-    console.error("No input files");
-    process.exit(1);
-  }
+  log(args);
 
-  if (!files.length) {
+  if (!Array.isArray(files) || !files.length) {
     console.error("No input files");
     process.exit(1);
   }

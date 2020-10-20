@@ -1,14 +1,15 @@
+import { Handler, AnyHandler, createExecutableSchema } from "@dotvirus/yxc";
+import chalk from "chalk";
+import haxan from "haxan";
+import ora from "ora";
+import { relative } from "path";
+import variableDiff from "variable-diff";
+
+import args from "./args";
 import log from "./log";
 import { resolveWorkflow, Workflow } from "./workflow";
-import haxan from "haxan";
-import { Handler, AnyHandler, createExecutableSchema } from "@dotvirus/yxc";
-import ora from "ora";
-import chalk from "chalk";
-import variableDiff from "variable-diff";
-import { relative } from "path";
-import args from "./args";
 
-class TestError extends Error {
+export class TestError extends Error {
   title: string;
 
   constructor(title: string, message: string) {
@@ -17,7 +18,7 @@ class TestError extends Error {
   }
 }
 
-interface IRunnerContext {
+export interface IRunnerContext {
   index: number;
   numTests: number;
 }
@@ -49,6 +50,7 @@ async function requireWorkflow(
   file: string,
   ctx: IRunnerContext,
 ): Promise<Workflow> {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const func = require(file).default;
   if (typeof func !== "function") {
     throw new Error(`${file}: not a function`);
@@ -65,16 +67,24 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
     ),
   );
 
+  log(`Before all hook`);
+  workflow.onBefore && (await workflow.onBefore({ ...ctx }));
+
   for (let i = 0; i < workflow.steps.length; i++) {
     const testCase = workflow.steps[i];
+    log(`Before each hook`);
+    workflow.onBeforeEach &&
+      (await workflow.onBeforeEach({ ...ctx, step: testCase }));
+    log(`Before hook`);
+    testCase.onBefore && (await testCase.onBefore({ ...ctx, step: testCase }));
     const loader = ora(`[${i + 1}/${workflow.steps.length}] ${testCase.title}`);
 
     const url = resolveUrl(testCase.url);
     const method = testCase.method || "GET";
     const resBuilder = haxan(url).method(method).timeout(args.timeout);
 
-    if (testCase.body) {
-      resBuilder.body(testCase.body);
+    if (testCase.reqBody) {
+      resBuilder.body(testCase.reqBody);
     }
 
     if (testCase.query) {
@@ -83,8 +93,8 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
       }
     }
 
-    if (testCase.headers) {
-      for (const [key, value] of Object.entries(testCase.headers)) {
+    if (testCase.reqHeaders) {
+      for (const [key, value] of Object.entries(testCase.reqHeaders)) {
         resBuilder.header(key, value);
       }
     }
@@ -93,35 +103,79 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
     const res = await resBuilder.request();
     log(`Got response from ${url}`);
 
-    if (res.status !== testCase.status) {
+    // eslint-disable-next-line no-inner-declarations
+    async function failTest(msg: string) {
+      log(`${file} failed`);
+      log(`Fail hook`);
+      testCase.onFail &&
+        (await testCase.onFail({ ...ctx, step: testCase, response: res }));
+      log(`After hook`);
+      testCase.onAfter &&
+        (await testCase.onAfter({ ...ctx, step: testCase, response: res }));
+      log(`After each hook`);
+      workflow.onAfterEach &&
+        (await workflow.onAfterEach({ ...ctx, step: testCase, response: res }));
+      log(`Workflow fail hook`);
+      workflow.onFail &&
+        (await workflow.onFail({ ...ctx, step: testCase, response: res }));
+      log(`After all hook`);
+      workflow.onAfter && (await workflow.onAfter({ ...ctx }));
       loader.fail();
-      throw new TestError(
-        testCase.title,
+      throw new TestError(testCase.title, msg);
+    }
+
+    if (res.status !== testCase.status) {
+      await failTest(
         `Expected status ${res.status} to equal ${testCase.status}`,
       );
     }
     log("Status OK");
 
-    if (testCase.data) {
-      const testDataHandler = resolveTestDefinitionData(testCase.data);
+    if (testCase.resBody) {
+      const testDataHandler = resolveTestDefinitionData(testCase.resBody);
       const result = createExecutableSchema(testDataHandler)(res.data);
       if (!result.ok) {
-        loader.fail();
-        throw new TestError(testCase.title, `Response body not as expected`);
+        await failTest(`Response body not as expected`);
       }
       log("Res body OK");
     }
 
-    testCase.onSuccess && testCase.onSuccess(res);
+    if (testCase.resHeaders) {
+      const testDataHandler = resolveTestDefinitionData(testCase.resHeaders);
+      const result = createExecutableSchema(testDataHandler)(res.headers);
+      if (!result.ok) {
+        await failTest(`Response headers not as expected`);
+      }
+      log("Res headers OK");
+    }
+
+    log(`${file} OK`);
+
+    log(`Success hook`);
+    testCase.onSuccess &&
+      (await testCase.onSuccess({ ...ctx, step: testCase, response: res }));
+
+    log(`After hook`);
+    testCase.onAfter &&
+      (await testCase.onAfter({ ...ctx, step: testCase, response: res }));
+
+    log(`After each hook`);
+    workflow.onAfterEach &&
+      (await workflow.onAfterEach({ ...ctx, step: testCase, response: res }));
 
     loader.succeed();
-    log(`${file} OK`);
   }
+
+  log(`Worflow success hook`);
+  workflow.onSuccess && (await workflow.onSuccess({ ...ctx }));
+
+  log(`After all hook`);
+  workflow.onAfter && (await workflow.onAfter({ ...ctx }));
 
   return true;
 }
 
-export async function runTests(files: Array<string>) {
+export async function runTests(files: Array<string>): Promise<void> {
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     try {
