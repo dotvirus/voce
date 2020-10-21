@@ -238,6 +238,10 @@ export async function runFile(ctx: IRunnerContext) {
   return result;
 }
 
+function getPercentString(num: number, max: number): number {
+  return parseFloat((100 * (num / max)).toFixed(2));
+}
+
 export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
   const result: IWorkflowResult = {
     numFailed: 0,
@@ -265,16 +269,40 @@ export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
   }
 
   // Summary
-  console.error("\n-----");
-  console.error(`Passed: ${result.numSuccess}`);
+
+  const numSteps =
+    result.numFailed + result.numSkipped + result.numSuccess + result.numTodo;
+
+  function formatPercent(num: number) {
+    return chalk.grey(`${getPercentString(num, numSteps)}%`);
+  }
+
+  console.error(chalk.grey("\n-----"));
+
+  console.error(
+    `Passed: ${result.numSuccess} ${formatPercent(result.numSuccess)}`,
+  );
+
   if (result.numFailed) {
-    console.error(chalk.redBright(`Failed: ${result.numFailed}`));
+    console.error(
+      chalk.redBright(
+        `Failed: ${result.numFailed} ${formatPercent(result.numFailed)}`,
+      ),
+    );
   }
   if (result.numSkipped) {
-    console.error(chalk.yellowBright(`Skipped: ${result.numSkipped}`));
+    console.error(
+      chalk.yellowBright(
+        `Skipped: ${result.numSkipped} ${formatPercent(result.numSkipped)}`,
+      ),
+    );
   }
   if (result.numTodo) {
-    console.error(chalk.cyanBright(`Todo: ${result.numTodo}`));
+    console.error(
+      chalk.cyanBright(
+        `Todo: ${result.numTodo} ${formatPercent(result.numTodo)}`,
+      ),
+    );
   }
 
   return result;

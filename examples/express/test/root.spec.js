@@ -5,7 +5,7 @@ module.exports.default = async () => {
   await startServer(port);
 
   return {
-    title: "Express CRUD example",
+    title: "Express example",
     baseUrl: `http://localhost:${port}`,
     steps: [
       {
