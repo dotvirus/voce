@@ -7,7 +7,6 @@ export default function (_ctx: any): Workflow {
     steps: [
       {
         url: "/todos/1",
-        title: "GET /todos/1",
         status: 200,
         resBody: {
           userId: 1,

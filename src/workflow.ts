@@ -15,7 +15,7 @@ function orYxcHandler(handler: Handler) {
 }
 
 export const workflowStepSchema = yxc.object({
-  title: yxc.string(),
+  title: yxc.string().optional(),
   url: orFunction(yxc.string()),
   method: yxc.string().optional(),
   status: yxc.number().natural(),
@@ -55,7 +55,7 @@ export const workflowSchema = yxc.object({
 });
 
 export type WorkflowStep = {
-  title: string;
+  title?: string;
   url: string | (() => string | Promise<string>);
   status: number;
   method?: string;

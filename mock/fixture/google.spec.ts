@@ -7,14 +7,11 @@ export default function (_ctx: any): Workflow {
     steps: [
       {
         url: () => "/",
-        title: "HEAD google",
         status: 200,
         method: "HEAD",
-        todo: true,
       },
       {
         url: "/",
-        title: "GET google",
         status: 200,
         validate: ({ response }) => {
           if (
@@ -29,7 +26,6 @@ export default function (_ctx: any): Workflow {
       {
         skip: true,
         url: "/",
-        title: "GET google",
         status: 200,
       },
     ],

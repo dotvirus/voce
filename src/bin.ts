@@ -2,7 +2,7 @@ import { resolve } from "path";
 
 import args from "./args";
 import log from "./log";
-import { runTests } from "./runner";
+import { runFiles } from "./runner";
 import { checkFiles } from "./util";
 
 if (args.register.length) {
@@ -35,7 +35,12 @@ async function main() {
 
   log(files);
 
-  await runTests(files);
+  const result = await runFiles(files);
+
+  if (result.numFailed > 0) {
+    log("Ran all tests, but had error");
+    process.exit(1);
+  }
 
   log("Ran all tests");
   process.exit(0);

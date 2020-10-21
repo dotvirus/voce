@@ -9,18 +9,10 @@ import args from "./args";
 import log from "./log";
 import { resolveWorkflow, Workflow } from "./workflow";
 
-export class TestError extends Error {
-  title: string;
-
-  constructor(title: string, message: string) {
-    super(message);
-    this.title = title;
-  }
-}
-
 export interface IRunnerContext {
   index: number;
   numTests: number;
+  file: string;
 }
 
 function resolveTestDefinitionData(data: unknown): Handler {
@@ -59,41 +51,71 @@ async function requireWorkflow(
   return resolveWorkflow(returnedDefinition);
 }
 
-async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
-  const workflow = await requireWorkflow(file, ctx);
+export interface IWorkflowResult {
+  numSuccess: number;
+  numFailed: number;
+  numTodo: number;
+  numSkipped: number;
+}
+
+async function runWorkflow(
+  workflow: Workflow,
+  ctx: IRunnerContext,
+): Promise<IWorkflowResult> {
   console.error(
     chalk.blueBright(
-      `\n${workflow.title} (${relative(process.cwd(), file)})\n`,
+      `\n${workflow.title} (${relative(process.cwd(), ctx.file)})`,
     ),
   );
+  if (workflow.baseUrl) {
+    console.error(chalk.grey(`Using base URL ${workflow.baseUrl}\n`));
+  }
+
+  const result: IWorkflowResult = {
+    numFailed: 0,
+    numSkipped: 0,
+    numSuccess: 0,
+    numTodo: 0,
+  };
+
+  const start = Date.now();
 
   log(`Before all hook`);
   workflow.onBefore && (await workflow.onBefore({ ...ctx }));
 
   for (let i = 0; i < workflow.steps.length; i++) {
     const testCase = workflow.steps[i];
+    const method = testCase.method || "GET";
+    const route = resolveUrl(testCase.url);
+    const url = (workflow.baseUrl || "") + route;
+    const title = testCase.title || `${method} ${route}`;
 
     if (testCase.todo) {
       console.error(
         chalk.cyanBright(
-          `? [${i + 1}/${workflow.steps.length}] TODO: ${testCase.title}`,
+          `? [${i + 1}/${workflow.steps.length}] TODO: ${title}`,
         ),
       );
+      result.numTodo++;
       continue;
     }
 
     if (testCase.skip) {
       console.error(
         chalk.yellowBright(
-          `! [${i + 1}/${workflow.steps.length}] SKIP: ${testCase.title}`,
+          `! [${i + 1}/${workflow.steps.length}] SKIP: ${title}`,
         ),
       );
+      result.numSkipped++;
       continue;
     }
 
-    const loader = ora(
-      `[${i + 1}/${workflow.steps.length}] ${testCase.title}`,
-    ).start();
+    const loader = ora(`[${i + 1}/${workflow.steps.length}] ${title}`).start();
+    function setLoaderTime() {
+      const now = Date.now();
+      const millis = now - start;
+      loader.text += chalk.grey(` (${millis} ms)`);
+    }
 
     log(`Before each hook`);
     workflow.onBeforeEach &&
@@ -101,8 +123,6 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
     log(`Before hook`);
     testCase.onBefore && (await testCase.onBefore({ ...ctx, step: testCase }));
 
-    const url = (workflow.baseUrl || "") + resolveUrl(testCase.url);
-    const method = testCase.method || "GET";
     const resBuilder = haxan(url).method(method).timeout(args.timeout);
 
     if (testCase.reqBody) {
@@ -126,8 +146,8 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
     log(`Got response from ${url}`);
 
     // eslint-disable-next-line no-inner-declarations
-    async function failTest(msg: string) {
-      log(`${file} failed`);
+    async function failTest(msg: string): Promise<IWorkflowResult> {
+      log(`${ctx.file} failed`);
       log(`Fail hook`);
       testCase.onFail &&
         (await testCase.onFail({ ...ctx, step: testCase, response: res }));
@@ -142,12 +162,15 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
         (await workflow.onFail({ ...ctx, step: testCase, response: res }));
       log(`After all hook`);
       workflow.onAfter && (await workflow.onAfter({ ...ctx }));
+      setLoaderTime();
       loader.fail();
-      throw new TestError(testCase.title, msg);
+      result.numFailed++;
+      console.warn(chalk.red(`\n${title}: ${msg}`));
+      return result;
     }
 
     if (res.status !== testCase.status) {
-      await failTest(
+      return failTest(
         `Expected status ${res.status} to equal ${testCase.status}`,
       );
     }
@@ -157,7 +180,7 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
       const testDataHandler = resolveTestDefinitionData(testCase.resBody);
       const result = createExecutableSchema(testDataHandler)(res.data);
       if (!result.ok) {
-        await failTest(`Response body not as expected`);
+        return failTest(`Response body not as expected`);
       }
       log("Res body OK");
     }
@@ -166,7 +189,7 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
       const testDataHandler = resolveTestDefinitionData(testCase.resHeaders);
       const result = createExecutableSchema(testDataHandler)(res.headers);
       if (!result.ok) {
-        await failTest(`Response headers not as expected`);
+        return failTest(`Response headers not as expected`);
       }
       log("Res headers OK");
     }
@@ -176,11 +199,11 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
       try {
         await testCase.validate({ ...ctx, step: testCase, response: res });
       } catch (error) {
-        await failTest(error.message);
+        return failTest(error.message);
       }
     }
 
-    log(`${file} OK`);
+    log(`${ctx.file} OK`);
 
     log(`Success hook`);
     testCase.onSuccess &&
@@ -194,7 +217,9 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
     workflow.onAfterEach &&
       (await workflow.onAfterEach({ ...ctx, step: testCase, response: res }));
 
+    setLoaderTime();
     loader.succeed();
+    result.numSuccess++;
   }
 
   log(`Workflow success hook`);
@@ -203,27 +228,53 @@ async function runTest(file: string, ctx: IRunnerContext): Promise<boolean> {
   log(`After all hook`);
   workflow.onAfter && (await workflow.onAfter({ ...ctx }));
 
-  return true;
+  return result;
 }
 
-export async function runTests(files: Array<string>): Promise<void> {
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    try {
-      await runTest(file, {
-        index: i,
-        numTests: files.length,
-      });
-    } catch (error) {
+export async function runFile(ctx: IRunnerContext) {
+  const workflow = await requireWorkflow(ctx.file, ctx);
+  const result = await runWorkflow(workflow, ctx);
+  return result;
+}
+
+export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
+  const result: IWorkflowResult = {
+    numFailed: 0,
+    numSkipped: 0,
+    numSuccess: 0,
+    numTodo: 0,
+  };
+  for (let index = 0; index < files.length; index++) {
+    const file = files[index];
+    const workflowResult = await runFile({
+      file,
+      index,
+      numTests: files.length,
+    });
+    if (workflowResult.numFailed > 0) {
       if (args.bail) {
         console.warn(chalk.yellow("\nBailing tests"));
         process.exit(1);
       }
-      if (error instanceof TestError) {
-        console.warn(chalk.red(`\n${error.title}: ${error.message}`));
-      } else {
-        throw error;
-      }
     }
+    result.numFailed += workflowResult.numFailed;
+    result.numSkipped += workflowResult.numSkipped;
+    result.numSuccess += workflowResult.numSuccess;
+    result.numTodo += workflowResult.numTodo;
   }
+
+  // Summary
+  console.error("\n-----");
+  console.error(`Passed: ${result.numSuccess}`);
+  if (result.numFailed) {
+    console.error(chalk.redBright(`Failed: ${result.numFailed}`));
+  }
+  if (result.numSkipped) {
+    console.error(chalk.yellowBright(`Skipped: ${result.numSkipped}`));
+  }
+  if (result.numTodo) {
+    console.error(chalk.cyanBright(`Todo: ${result.numTodo}`));
+  }
+
+  return result;
 }
