@@ -2,7 +2,7 @@ import { Handler, AnyHandler, createExecutableSchema } from "@dotvirus/yxc";
 import chalk from "chalk";
 import haxan from "haxan";
 import ora from "ora";
-import { relative } from "path";
+import { relative, resolve } from "path";
 import variableDiff from "variable-diff";
 
 import args from "./args";
@@ -42,10 +42,11 @@ async function requireWorkflow(
   file: string,
   ctx: IRunnerContext,
 ): Promise<Workflow> {
+  const path = resolve(file);
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const func = require(file).default;
+  const func = require(path).default;
   if (typeof func !== "function") {
-    throw new Error(`${file}: not a function`);
+    throw new Error(`${path}: not a function`);
   }
   const returnedDefinition = await func(ctx);
   return resolveWorkflow(returnedDefinition);
