@@ -40,7 +40,7 @@ export const workflowStepSchema = yxc.object({
 
 export const workflowSchema = yxc.object({
   title: yxc.string(),
-  steps: yxc.array(workflowStepSchema),
+  steps: yxc.array(workflowStepSchema).notEmpty(),
 
   baseUrl: yxc.string().optional(),
 
@@ -64,7 +64,7 @@ export type WorkflowStep = {
   resBody?: any | ObjectHandler<any>;
   query?: Record<string, string>;
   reqHeaders?: Record<string, string>;
-  resHeaders?: Record<string, string>;
+  resHeaders?: Record<string, string> | ObjectHandler<any>;
 
   validate?: (
     ctx: IRunnerContext & {

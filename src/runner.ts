@@ -7,11 +7,12 @@ import variableDiff from "variable-diff";
 
 import args from "./args";
 import log from "./log";
+import { percentFormatter } from "./util";
 import { resolveWorkflow, Workflow } from "./workflow";
 
 export interface IRunnerContext {
   index: number;
-  numTests: number;
+  numWorkflows: number;
   file: string;
 }
 
@@ -59,7 +60,7 @@ export interface IWorkflowResult {
   numSkipped: number;
 }
 
-async function runWorkflow(
+export async function runWorkflow(
   workflow: Workflow,
   ctx: IRunnerContext,
 ): Promise<IWorkflowResult> {
@@ -239,16 +240,6 @@ export async function runFile(ctx: IRunnerContext): Promise<IWorkflowResult> {
   return result;
 }
 
-function getPercentString(num: number, max: number): number {
-  return parseFloat((100 * (num / max)).toFixed(2));
-}
-
-function percentFormatter(max: number) {
-  return function (num: number) {
-    return chalk.grey(`${getPercentString(num, max)}%`);
-  };
-}
-
 export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
   const result: IWorkflowResult = {
     numFailed: 0,
@@ -261,7 +252,7 @@ export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
     const workflowResult = await runFile({
       file,
       index,
-      numTests: files.length,
+      numWorkflows: files.length,
     });
     if (workflowResult.numFailed > 0) {
       if (args.bail) {

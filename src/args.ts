@@ -1,7 +1,7 @@
 import yargs = require("yargs");
 
 export default yargs
-  .scriptName("api-tester")
+  .scriptName("voce")
   .command("$0 [files..]", "Test files")
   .version("0.0.1")
   .options({

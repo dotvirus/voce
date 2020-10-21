@@ -1,5 +1,3 @@
-# Ultra API
+# Voce
 
-Name subject to change
-
-![Coverage & CI](https://github.com/dotvirus/ultra-api/workflows/Coverage%20&%20CI/badge.svg)
+![Coverage & CI](https://github.com/dotvirus/voce/workflows/Coverage%20&%20CI/badge.svg)
