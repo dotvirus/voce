@@ -112,6 +112,7 @@ async function runWorkflow(
     }
 
     const loader = ora(`[${i + 1}/${workflow.steps.length}] ${title}`).start();
+    // eslint-disable-next-line no-inner-declarations
     function setLoaderTime() {
       const now = Date.now();
       const millis = now - start;
@@ -232,7 +233,7 @@ async function runWorkflow(
   return result;
 }
 
-export async function runFile(ctx: IRunnerContext) {
+export async function runFile(ctx: IRunnerContext): Promise<IWorkflowResult> {
   const workflow = await requireWorkflow(ctx.file, ctx);
   const result = await runWorkflow(workflow, ctx);
   return result;
@@ -240,6 +241,12 @@ export async function runFile(ctx: IRunnerContext) {
 
 function getPercentString(num: number, max: number): number {
   return parseFloat((100 * (num / max)).toFixed(2));
+}
+
+function percentFormatter(max: number) {
+  return function (num: number) {
+    return chalk.grey(`${getPercentString(num, max)}%`);
+  };
 }
 
 export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
@@ -269,20 +276,14 @@ export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
   }
 
   // Summary
-
   const numSteps =
     result.numFailed + result.numSkipped + result.numSuccess + result.numTodo;
-
-  function formatPercent(num: number) {
-    return chalk.grey(`${getPercentString(num, numSteps)}%`);
-  }
+  const formatPercent = percentFormatter(numSteps);
 
   console.error(chalk.grey("\n-----"));
-
   console.error(
     `Passed: ${result.numSuccess} ${formatPercent(result.numSuccess)}`,
   );
-
   if (result.numFailed) {
     console.error(
       chalk.redBright(
