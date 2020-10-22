@@ -45,7 +45,7 @@ async function testFiles(files: Array<string>) {
 async function main() {
   log("Entry point");
   register();
-  let files = <Array<string>>args.files;
+  const files = <Array<string>>args.files;
   log(args);
   await testFiles(files);
 }

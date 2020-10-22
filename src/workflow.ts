@@ -64,6 +64,7 @@ export type WorkflowStep = {
   resBody?: any | ObjectHandler<any>;
   query?: Record<string, string>;
   reqHeaders?: Record<string, string>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resHeaders?: Record<string, string> | ObjectHandler<any>;
 
   validate?: (

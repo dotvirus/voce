@@ -9,7 +9,7 @@ export interface IEvaluatorOptions {
 export function evaluateResult(
   result: IWorkflowResult,
   opts?: Partial<IEvaluatorOptions>,
-) {
+): void {
   if (result.numFailed > 0) {
     log("Ran all tests, but had error");
     process.exit(1);
