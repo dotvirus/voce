@@ -1,23 +1,21 @@
 import { resolve } from "path";
 
 import args from "./args";
+import { evaluateResult } from "./evaluator";
 import log from "./log";
 import { runFiles } from "./runner";
-import { checkFiles } from "./util";
+import { getMissingFiles } from "./util";
 
-if (args.register.length) {
-  for (const pkg of args.register) {
-    log(`Register ${pkg}`);
-    require(pkg);
+function register() {
+  if (args.register.length) {
+    for (const pkg of args.register) {
+      log(`Register ${pkg}`);
+      require(pkg);
+    }
   }
 }
 
-async function main() {
-  log("Entry point");
-  let files = <Array<string>>args.files;
-
-  log(args);
-
+async function testFiles(files: Array<string>) {
   if (!Array.isArray(files) || !files.length) {
     console.error("No input files");
     process.exit(1);
@@ -26,7 +24,7 @@ async function main() {
   files = files.map((f) => resolve(f));
 
   {
-    const notFound = checkFiles(files);
+    const notFound = getMissingFiles(files);
     if (notFound.length) {
       console.error("Some input files were not found:", notFound);
       process.exit(1);
@@ -34,16 +32,22 @@ async function main() {
   }
 
   log(files);
+  const result = await runFiles(files, {
+    bail: args.bail,
+  });
+  log(result);
+  evaluateResult(result, {
+    failOnSkip: args["fail-skip"],
+    failOnTodo: args["fail-todo"],
+  });
+}
 
-  const result = await runFiles(files);
-
-  if (result.numFailed > 0) {
-    log("Ran all tests, but had error");
-    process.exit(1);
-  }
-
-  log("Ran all tests");
-  process.exit(0);
+async function main() {
+  log("Entry point");
+  register();
+  let files = <Array<string>>args.files;
+  log(args);
+  await testFiles(files);
 }
 
 main();

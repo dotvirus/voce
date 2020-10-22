@@ -81,6 +81,8 @@ export async function runWorkflow(
   };
 
   const start = Date.now();
+  let workflowFailed = false;
+  let errorMessage: string | null = null;
 
   log(`Before all hook`);
   workflow.onBefore && (await workflow.onBefore({ ...ctx }));
@@ -91,6 +93,13 @@ export async function runWorkflow(
     const route = resolveUrl(testCase.url);
     const url = (workflow.baseUrl || "") + route;
     const title = testCase.title || `${method} ${route}`;
+
+    if (workflowFailed) {
+      console.error(
+        chalk.gray(`- [${i + 1}/${workflow.steps.length}] ${title}`),
+      );
+      continue;
+    }
 
     if (testCase.todo) {
       console.error(
@@ -168,14 +177,16 @@ export async function runWorkflow(
       setLoaderTime();
       loader.fail();
       result.numFailed++;
-      console.warn(chalk.red(`\n${title}: ${msg}`));
+      errorMessage = `\n${title}: ${msg}`;
+      workflowFailed = true;
       return result;
     }
 
     if (res.status !== testCase.status) {
-      return failTest(
+      await failTest(
         `Expected status ${res.status} to equal ${testCase.status}`,
       );
+      continue;
     }
     log("Status OK");
 
@@ -183,7 +194,8 @@ export async function runWorkflow(
       const testDataHandler = resolveTestDefinitionData(testCase.resBody);
       const result = createExecutableSchema(testDataHandler)(res.data);
       if (!result.ok) {
-        return failTest(`Response body not as expected`);
+        await failTest(`Response body not as expected`);
+        continue;
       }
       log("Res body OK");
     }
@@ -192,7 +204,8 @@ export async function runWorkflow(
       const testDataHandler = resolveTestDefinitionData(testCase.resHeaders);
       const result = createExecutableSchema(testDataHandler)(res.headers);
       if (!result.ok) {
-        return failTest(`Response headers not as expected`);
+        await failTest(`Response headers not as expected`);
+        continue;
       }
       log("Res headers OK");
     }
@@ -202,7 +215,8 @@ export async function runWorkflow(
       try {
         await testCase.validate({ ...ctx, step: testCase, response: res });
       } catch (error) {
-        return failTest(error.message);
+        await failTest(error.message);
+        continue;
       }
     }
 
@@ -225,8 +239,12 @@ export async function runWorkflow(
     result.numSuccess++;
   }
 
-  log(`Workflow success hook`);
-  workflow.onSuccess && (await workflow.onSuccess({ ...ctx }));
+  if (!workflowFailed) {
+    log(`Workflow success hook`);
+    workflow.onSuccess && (await workflow.onSuccess({ ...ctx }));
+  } else {
+    console.warn(chalk.red(errorMessage));
+  }
 
   log(`After all hook`);
   workflow.onAfter && (await workflow.onAfter({ ...ctx }));
@@ -240,7 +258,14 @@ export async function runFile(ctx: IRunnerContext): Promise<IWorkflowResult> {
   return result;
 }
 
-export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
+export interface IRunnerOptions {
+  bail: boolean;
+}
+
+export async function runFiles(
+  files: Array<string>,
+  opts?: Partial<IRunnerOptions>,
+): Promise<IWorkflowResult> {
   const result: IWorkflowResult = {
     numFailed: 0,
     numSkipped: 0,
@@ -255,7 +280,7 @@ export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
       numWorkflows: files.length,
     });
     if (workflowResult.numFailed > 0) {
-      if (args.bail) {
+      if (opts?.bail) {
         console.warn(chalk.yellow("\nBailing tests"));
         process.exit(1);
       }
@@ -273,12 +298,12 @@ export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
 
   console.error(chalk.grey("\n-----"));
   console.error(
-    `Passed: ${result.numSuccess} ${formatPercent(result.numSuccess)}`,
+    `Passed : ${result.numSuccess} ${formatPercent(result.numSuccess)}`,
   );
   if (result.numFailed) {
     console.error(
       chalk.redBright(
-        `Failed: ${result.numFailed} ${formatPercent(result.numFailed)}`,
+        `Failed : ${result.numFailed} ${formatPercent(result.numFailed)}`,
       ),
     );
   }
@@ -292,7 +317,7 @@ export async function runFiles(files: Array<string>): Promise<IWorkflowResult> {
   if (result.numTodo) {
     console.error(
       chalk.cyanBright(
-        `Todo: ${result.numTodo} ${formatPercent(result.numTodo)}`,
+        `Todo   : ${result.numTodo} ${formatPercent(result.numTodo)}`,
       ),
     );
   }

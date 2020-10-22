@@ -15,6 +15,17 @@ export default function (_ctx: any): Workflow {
           completed: false,
         },
       },
+      {
+        todo: true,
+        url: "/todos/1",
+        status: 200,
+        resBody: {
+          userId: 1,
+          id: 1,
+          title: "delectus aut autem",
+          completed: false,
+        },
+      },
     ],
   };
 }

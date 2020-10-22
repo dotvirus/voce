@@ -1,6 +1,6 @@
 import ava from "ava";
-import { checkFiles } from "../src/util";
+import { getMissingFiles } from "../src/util";
 
-ava.serial("Check files", (t) => {
-  t.deepEqual(checkFiles(["package.json", "no.json"]), ["no.json"]);
+ava.serial("Get missing files", (t) => {
+  t.deepEqual(getMissingFiles(["package.json", "no.json"]), ["no.json"]);
 });

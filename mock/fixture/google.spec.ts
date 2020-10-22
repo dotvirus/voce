@@ -7,7 +7,7 @@ export default function (_ctx: any): Workflow {
     steps: [
       {
         url: () => "/",
-        status: 200,
+        status: 201,
         method: "HEAD",
       },
       {
@@ -22,6 +22,7 @@ export default function (_ctx: any): Workflow {
           }
           throw new Error("Not google home page");
         },
+        todo: true,
       },
       {
         skip: true,

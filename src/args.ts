@@ -17,4 +17,12 @@ export default yargs
       type: "number",
       default: 15000,
     },
+    "fail-skip": {
+      type: "boolean",
+      default: false,
+    },
+    "fail-todo": {
+      type: "boolean",
+      default: false,
+    },
   }).argv;
