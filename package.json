@@ -6,6 +6,10 @@
   "bin": {
     "voce": "cli.js"
   },
+  "files": [
+    "dist",
+    "cli.js"
+  ],
   "scripts": {
     "build": "tsc",
     "lint": "eslint src --ext .ts",
@@ -18,7 +22,10 @@
     "type": "git",
     "url": "git+https://github.com/dotvirus/typescript-eslint-ava-template.git"
   },
-  "keywords": [],
+  "keywords": [
+    "api tester",
+    "test suite"
+  ],
   "author": "dotvirus",
   "license": "ISC",
   "bugs": {

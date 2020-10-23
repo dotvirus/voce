@@ -16,7 +16,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - run: npm install
       - run: npx ts-node version ${{ github.event.release.tag_name }}
-      - run: npm run test:verbose
+      - run: npm run test
       - run: npm run build
       - run: npm publish --access public
         env:
