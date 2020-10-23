@@ -142,6 +142,7 @@ export async function runWorkflow(
     }
 
     if (testCase.query) {
+      const query = resolveIfFunction(testCase.query);
       for (const [key, value] of Object.entries(query)) {
         resBuilder.param(key, value);
       }
