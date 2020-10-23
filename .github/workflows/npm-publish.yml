@@ -1,9 +1,8 @@
 name: Publish to NPM
 
 on:
-  push:
-    branches:
-      - master
+  release:
+    types: created
 
 jobs:
   build:
@@ -16,6 +15,7 @@ jobs:
           node-version: "12.x"
           registry-url: "https://registry.npmjs.org"
       - run: npm install
+      - run: npx ts-node version ${{ github.event.release.tag_name }}
       - run: npm run test:verbose
       - run: npm run build
       - run: npm publish --access public

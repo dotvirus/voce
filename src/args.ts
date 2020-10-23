@@ -1,9 +1,11 @@
 import yargs = require("yargs");
 
+export const version = "0.0.1";
+
 export default yargs
   .scriptName("voce")
   .command("$0 [files..]", "Test files")
-  .version("0.0.1")
+  .version(version)
   .options({
     register: {
       type: "array",
