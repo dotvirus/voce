@@ -137,17 +137,19 @@ export async function runWorkflow(
     const resBuilder = haxan(url).method(method).timeout(args.timeout);
 
     if (testCase.reqBody) {
-      resBuilder.body(testCase.reqBody);
+      const body = resolveIfFunction(testCase.reqBody);
+      resBuilder.body(body);
     }
 
     if (testCase.query) {
-      for (const [key, value] of Object.entries(testCase.query)) {
+      for (const [key, value] of Object.entries(query)) {
         resBuilder.param(key, value);
       }
     }
 
     if (testCase.reqHeaders) {
-      for (const [key, value] of Object.entries(testCase.reqHeaders)) {
+      const headers = resolveIfFunction(testCase.reqHeaders);
+      for (const [key, value] of Object.entries(headers)) {
         resBuilder.header(key, value);
       }
     }
