@@ -193,6 +193,7 @@ export async function runWorkflow(
       const testDataHandler = resolveTestDefinitionData(testCase.resBody);
       const result = createExecutableSchema(testDataHandler)(res.data);
       if (!result.ok) {
+        console.error(result.errors);
         await failTest(`Response body not as expected`);
         continue;
       }
@@ -203,6 +204,7 @@ export async function runWorkflow(
       const testDataHandler = resolveTestDefinitionData(testCase.resHeaders);
       const result = createExecutableSchema(testDataHandler)(res.headers);
       if (!result.ok) {
+        console.error(result.errors);
         await failTest(`Response headers not as expected`);
         continue;
       }
