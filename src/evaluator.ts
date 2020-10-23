@@ -6,25 +6,31 @@ export interface IEvaluatorOptions {
   failOnSkip: boolean;
 }
 
+export enum TestResult {
+  Success,
+  Failed,
+}
+
+// Returns if the test failed
 export function evaluateResult(
   result: IWorkflowResult,
   opts?: Partial<IEvaluatorOptions>,
-): void {
+): TestResult {
   if (result.numFailed > 0) {
     log("Ran all tests, but had error");
-    process.exit(1);
+    return TestResult.Failed;
   }
 
   if (opts?.failOnSkip && result.numSkipped > 0) {
     log("Ran all tests, but had skip");
-    process.exit(1);
+    return TestResult.Failed;
   }
 
   if (opts?.failOnTodo && result.numTodo > 0) {
     log("Ran all tests, but had todo");
-    process.exit(1);
+    return TestResult.Failed;
   }
 
-  log("Ran all tests");
-  process.exit(0);
+  log("Ran all tests, successfully");
+  return TestResult.Success;
 }

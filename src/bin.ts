@@ -36,10 +36,11 @@ async function testFiles(files: Array<string>) {
     bail: args.bail,
   });
   log(result);
-  evaluateResult(result, {
+  const failed = evaluateResult(result, {
     failOnSkip: args["fail-skip"],
     failOnTodo: args["fail-todo"],
   });
+  process.exit(failed);
 }
 
 async function main() {
