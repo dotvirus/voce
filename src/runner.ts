@@ -16,27 +16,26 @@ export interface IRunnerContext {
   file: string;
 }
 
+function resolveIfFunction<T>(val: T | (() => T)): T {
+  if (typeof val === "function") {
+    return (val as () => T)();
+  }
+  return val;
+}
+
 function resolveTestDefinitionData(data: unknown): Handler {
-  if (data instanceof Handler) {
-    return data;
+  const val = resolveIfFunction(data);
+  if (val instanceof Handler) {
+    return val;
   } else {
     return new AnyHandler().rule((v) => {
-      const result = variableDiff(v, data);
+      const result = variableDiff(v, val);
       if (result.changed) {
         console.error(result.text);
       }
       return !result.changed;
     });
   }
-}
-
-function resolveUrl(url: unknown): string {
-  if (typeof url === "string") {
-    return url;
-  } else if (typeof url === "function") {
-    return resolveUrl(url());
-  }
-  throw new Error(`Invalid url: ${url}`);
 }
 
 async function requireWorkflow(
@@ -90,7 +89,7 @@ export async function runWorkflow(
   for (let i = 0; i < workflow.steps.length; i++) {
     const testCase = workflow.steps[i];
     const method = testCase.method || "GET";
-    const route = resolveUrl(testCase.url);
+    const route = resolveIfFunction(testCase.url);
     const url = (workflow.baseUrl || "") + route;
     const title = testCase.title || `${method} ${route}`;
 

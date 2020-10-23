@@ -23,7 +23,9 @@ export const workflowStepSchema = yxc.object({
   resBody: yxc.any().optional().nullable(),
   query: yxc.record(yxc.string()).optional(),
   reqHeaders: yxc.record(yxc.string()).optional(),
-  resHeaders: orYxcHandler(yxc.record(yxc.string())).optional().nullable(),
+  resHeaders: orFunction(orYxcHandler(yxc.record(yxc.string())))
+    .optional()
+    .nullable(),
 
   validate: functionType.optional(),
 
@@ -56,7 +58,7 @@ export const workflowSchema = yxc.object({
 
 export type WorkflowStep = {
   title?: string;
-  url: string | (() => string | Promise<string>);
+  url: string | (() => string);
   status: number;
   method?: string;
   reqBody?: Record<string, unknown>;
@@ -65,7 +67,10 @@ export type WorkflowStep = {
   query?: Record<string, string>;
   reqHeaders?: Record<string, string>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  resHeaders?: Record<string, string> | ObjectHandler<any>;
+  resHeaders?:
+    | Record<string, string>
+    | ObjectHandler<any>
+    | (() => Record<string, string> | ObjectHandler<any>);
 
   validate?: (
     ctx: IRunnerContext & {
