@@ -1,5 +1,9 @@
 import { IHaxanResponse } from "haxan";
-import yxc, { Handler, is, ObjectHandler } from "@dotvirus/yxc";
+import yxc, {
+  createExecutableSchema,
+  Handler,
+  ObjectHandler,
+} from "@dotvirus/yxc";
 
 import { IRunnerContext } from "./runner";
 
@@ -127,8 +131,10 @@ export type Workflow = {
 };
 
 export function resolveWorkflow(val: unknown): Workflow {
-  if (is(val, workflowSchema)) {
-    return val;
+  const result = createExecutableSchema(workflowSchema)(val);
+  if (result.ok) {
+    return val as Workflow;
   }
+  console.error(result.errors);
   throw new Error("Invalid test definition");
 }

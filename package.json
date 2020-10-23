@@ -1,6 +1,6 @@
 {
   "name": "voce",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "API test runner",
   "main": "dist/index.js",
   "bin": {
