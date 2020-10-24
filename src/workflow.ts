@@ -23,8 +23,8 @@ export const workflowStepSchema = yxc.object({
   url: orFunction(yxc.string()),
   method: yxc.string().optional(),
   status: yxc.number().natural(),
-  reqBody: yxc.object().arbitrary().optional(),
-  resBody: yxc.any().optional().nullable(),
+  reqBody: orFunction(yxc.object().arbitrary()).optional(),
+  resBody: orFunction(yxc.any().optional()).nullable(),
   query: orFunction(yxc.record(yxc.string())).optional(),
   reqHeaders: orFunction(yxc.record(yxc.string())).optional(),
   resHeaders: orFunction(orYxcHandler(yxc.record(yxc.string())))
@@ -65,7 +65,7 @@ export type WorkflowStep = {
   url: string | (() => string);
   status: number;
   method?: string;
-  reqBody?: Record<string, unknown>;
+  reqBody?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resBody?: any;
   query?: Record<string, string> | (() => Record<string, string>);
