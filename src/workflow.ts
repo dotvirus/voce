@@ -65,6 +65,7 @@ export type WorkflowStep = {
   url: string | (() => string);
   status: number;
   method?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reqBody?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resBody?: any;
