@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dotvirus/typescript-eslint-ava-template.git"
+    "url": "git+https://github.com/dotvirus/voce.git"
   },
   "keywords": [
     "api tester",
@@ -29,9 +29,9 @@
   "author": "dotvirus",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dotvirus/typescript-eslint-ava-template/issues"
+    "url": "https://github.com/dotvirus/voce/issues"
   },
-  "homepage": "https://github.com/dotvirus/typescript-eslint-ava-template#readme",
+  "homepage": "https://github.com/dotvirus/voce#readme",
   "devDependencies": {
     "@types/chalk": "^2.2.0",
     "@types/debug": "^4.1.5",
