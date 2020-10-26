@@ -11,4 +11,8 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "prettier/@typescript-eslint",
   ],
+  rules: {
+    eqeqeq: "error",
+    yoda: "error",
+  },
 };
