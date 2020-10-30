@@ -79,7 +79,6 @@ export async function runWorkflow(
     numTodo: 0,
   };
 
-  const start = Date.now();
   let workflowFailed = false;
   let errorMessage: string | null = null;
 
@@ -87,6 +86,7 @@ export async function runWorkflow(
   workflow.onBefore && (await workflow.onBefore({ ...ctx }));
 
   for (let i = 0; i < workflow.steps.length; i++) {
+    const start = Date.now();
     const testCase = workflow.steps[i];
     const method = testCase.method || "GET";
     const route = resolveIfFunction(testCase.url);
