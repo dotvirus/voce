@@ -22,7 +22,10 @@ async function testFiles(files: Array<string>) {
     process.exit(1);
   }
 
+  // Resolve globs
   files = files.flatMap((x) => glob.sync(x)).map((x) => resolve(x));
+  // Ensure paths are unique
+  files = [...new Set(files)];
 
   {
     const notFound = getMissingFiles(files);
