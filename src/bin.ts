@@ -1,4 +1,5 @@
 import { resolve } from "path";
+import glob from "glob";
 
 import args from "./args";
 import { evaluateResult } from "./evaluator";
@@ -21,7 +22,7 @@ async function testFiles(files: Array<string>) {
     process.exit(1);
   }
 
-  files = files.map((f) => resolve(f));
+  files = files.flatMap((x) => glob.sync(x)).map((x) => resolve(x));
 
   {
     const notFound = getMissingFiles(files);
