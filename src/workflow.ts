@@ -139,3 +139,10 @@ export function resolveWorkflow(val: unknown): Workflow {
   console.error(result.errors);
   throw new Error("Invalid test definition");
 }
+
+// Wrapper for type inference
+export function defineWorkflow(
+  func: () => Workflow | Promise<Workflow>,
+): () => Workflow | Promise<Workflow> {
+  return func;
+}
