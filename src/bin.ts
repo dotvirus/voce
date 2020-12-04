@@ -2,7 +2,7 @@ import { resolve } from "path";
 import glob from "glob";
 
 import args from "./args";
-import { evaluateResult } from "./evaluator";
+import { evaluateResult, TestResult } from "./evaluator";
 import log from "./log";
 import { runFiles } from "./runner";
 import { getMissingFiles } from "./util";
@@ -21,7 +21,7 @@ function register() {
 async function testFiles(files: Array<string>) {
   if (!Array.isArray(files) || !files.length) {
     console.error("No input files");
-    return;
+    return TestResult.Failed;
   }
 
   // Resolve globs
@@ -33,7 +33,7 @@ async function testFiles(files: Array<string>) {
     const notFound = getMissingFiles(files);
     if (notFound.length) {
       console.error("Some input files were not found:", notFound);
-      return;
+      return TestResult.Failed;
     }
   }
 
@@ -46,7 +46,8 @@ async function testFiles(files: Array<string>) {
     failOnSkip: args["fail-skip"],
     failOnTodo: args["fail-todo"],
   });
-  process.exit(failed);
+
+  return failed;
 }
 
 async function main() {
@@ -73,12 +74,14 @@ async function main() {
     await config.hooks.before();
   }
 
-  await testFiles(files);
+  const failed = await testFiles(files);
 
   if (config.hooks?.after) {
     log("Running after hook");
     await config.hooks.after();
   }
+
+  process.exit(failed);
 }
 
 main();
