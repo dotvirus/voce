@@ -6,6 +6,8 @@ import { evaluateResult } from "./evaluator";
 import log from "./log";
 import { runFiles } from "./runner";
 import { getMissingFiles } from "./util";
+import { existsSync } from "fs";
+import { getConfig, IConfig } from "./config";
 
 function register() {
   if (args.register.length) {
@@ -19,7 +21,7 @@ function register() {
 async function testFiles(files: Array<string>) {
   if (!Array.isArray(files) || !files.length) {
     console.error("No input files");
-    process.exit(1);
+    return;
   }
 
   // Resolve globs
@@ -31,15 +33,15 @@ async function testFiles(files: Array<string>) {
     const notFound = getMissingFiles(files);
     if (notFound.length) {
       console.error("Some input files were not found:", notFound);
-      process.exit(1);
+      return;
     }
   }
 
-  log(files);
+  log({ files });
   const result = await runFiles(files, {
     bail: args.bail,
   });
-  log(result);
+  log({ result });
   const failed = evaluateResult(result, {
     failOnSkip: args["fail-skip"],
     failOnTodo: args["fail-todo"],
@@ -51,8 +53,32 @@ async function main() {
   log("Entry point");
   register();
   const files = <Array<string>>args.files;
-  log(args);
+  log({ args });
+
+  const configPath = resolve(args.config);
+  log({ configPath });
+
+  const config: IConfig = await (async () => {
+    log(`Checking config @ ${configPath}`);
+    if (existsSync(configPath)) {
+      log(`Found config @ ${configPath}, importing...`);
+      return getConfig(configPath);
+    }
+    log(`No config file found (config: ${configPath})`);
+    return { hooks: undefined };
+  })();
+
+  if (config.hooks?.before) {
+    log("Running before hook");
+    await config.hooks.before();
+  }
+
   await testFiles(files);
+
+  if (config.hooks?.after) {
+    log("Running after hook");
+    await config.hooks.after();
+  }
 }
 
 main();

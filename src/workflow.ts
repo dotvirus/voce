@@ -6,12 +6,12 @@ import yxc, {
 } from "@dotvirus/yxc";
 
 import { IRunnerContext } from "./runner";
+import { functionType } from "./util";
 
-const functionType = yxc.any().rule((v) => typeof v === "function");
 const yxcHandlerType = yxc.any().rule((v) => v instanceof Handler);
 
 function orFunction(handler: Handler) {
-  return yxc.union([functionType, handler]);
+  return yxc.union([functionType(), handler]);
 }
 
 function orYxcHandler(handler: Handler) {
@@ -31,14 +31,14 @@ export const workflowStepSchema = yxc.object({
     .optional()
     .nullable(),
 
-  validate: functionType.optional(),
+  validate: functionType().optional(),
 
-  onBefore: functionType.optional(),
+  onBefore: functionType().optional(),
 
-  onSuccess: functionType.optional(),
-  onFail: functionType.optional(),
+  onSuccess: functionType().optional(),
+  onFail: functionType().optional(),
 
-  onAfter: functionType.optional(),
+  onAfter: functionType().optional(),
 
   todo: yxc.boolean().optional(),
   skip: yxc.boolean().optional(),
@@ -50,14 +50,14 @@ export const workflowSchema = yxc.object({
 
   baseUrl: yxc.string().optional(),
 
-  onBefore: functionType.optional(),
-  onAfter: functionType.optional(),
+  onBefore: functionType().optional(),
+  onAfter: functionType().optional(),
 
-  onBeforeEach: functionType.optional(),
-  onAfterEach: functionType.optional(),
+  onBeforeEach: functionType().optional(),
+  onAfterEach: functionType().optional(),
 
-  onSuccess: functionType.optional(),
-  onFail: functionType.optional(),
+  onSuccess: functionType().optional(),
+  onFail: functionType().optional(),
 });
 
 export type WorkflowStep = {

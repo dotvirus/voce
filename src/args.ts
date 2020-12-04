@@ -1,6 +1,6 @@
 import yargs = require("yargs");
 
-export const version = "0.3.0";
+export const version = "0.4.0";
 
 export default yargs
   .scriptName("voce")
@@ -26,5 +26,10 @@ export default yargs
     "fail-todo": {
       type: "boolean",
       default: false,
+    },
+    config: {
+      type: "string",
+      default: "voce.config.js",
+      alias: "c",
     },
   }).argv;

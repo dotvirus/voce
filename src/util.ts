@@ -1,5 +1,9 @@
+import yxc, { AnyHandler } from "@dotvirus/yxc";
 import chalk from "chalk";
 import { existsSync } from "fs";
+
+export const functionType = (): AnyHandler =>
+  yxc.any().rule((v) => typeof v === "function");
 
 export function getMissingFiles(files: Array<string>): Array<string> {
   const notFound: Array<string> = [];
