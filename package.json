@@ -20,18 +20,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dotvirus/voce.git"
+    "url": "git+https://github.com/marvin-j97/voce.git"
   },
   "keywords": [
     "api tester",
     "test suite"
   ],
-  "author": "dotvirus",
+  "author": "marvin-j97",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dotvirus/voce/issues"
+    "url": "https://github.com/marvin-j97/voce/issues"
   },
-  "homepage": "https://github.com/dotvirus/voce#readme",
+  "homepage": "https://github.com/marvin-j97/voce#readme",
   "devDependencies": {
     "@types/chalk": "^2.2.0",
     "@types/debug": "^4.1.5",
