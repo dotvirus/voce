@@ -64,12 +64,12 @@ export class WorkflowStep {
     return this;
   }
 
-  query(query: () => Record<string, string>): this {
+  query(query: CaptureUnion<Record<string, string>>): this {
     this._query = query;
     return this;
   }
 
-  headers(headers: Record<string, string>): this {
+  headers(headers: CaptureUnion<Record<string, string>>): this {
     this._headers = headers;
     return this;
   }
