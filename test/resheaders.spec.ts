@@ -1,7 +1,8 @@
 import ava from "ava";
 import { runWorkflow } from "../src/runner";
 import sinon from "sinon";
-import yxc from "@dotvirus/yxc";
+import yxc, { createExecutableSchema } from "@dotvirus/yxc";
+import { WorkflowStep } from "../src/workflow_step";
 
 ava.serial("Response body & headers test", async (t) => {
   const successCallback = sinon.fake();
@@ -11,36 +12,34 @@ ava.serial("Response body & headers test", async (t) => {
       title: "JSON placeholder",
       baseUrl: "https://jsonplaceholder.typicode.com",
       steps: [
-        {
-          url: "/todos/1",
-          status: 200,
-        },
-        {
-          url: "/todos/1",
-          status: 200,
-          resHeaders: yxc
-            .object({
-              "content-type": yxc.string().prefix("application/json;"),
-            })
-            .arbitrary(),
-          onSuccess: successCallback,
-          onFail: failCallback,
-        },
-        {
-          url: "/todos/2",
-          status: 200,
-        },
-        {
-          url: "/todos/2",
-          status: 200,
-          resHeaders: yxc
-            .object({
-              "content-type": yxc.string().prefix("application/yaml;"),
-            })
-            .arbitrary(),
-          onSuccess: successCallback,
-          onFail: failCallback,
-        },
+        new WorkflowStep("/todos/1", 200),
+        new WorkflowStep("/todos/1", 200)
+          .onSuccess(successCallback)
+          .onFail(failCallback)
+          .validateHeaders(
+            (headers) =>
+              createExecutableSchema(
+                yxc
+                  .object({
+                    "content-type": yxc.string().prefix("application/json;"),
+                  })
+                  .arbitrary(),
+              )(headers).errors,
+          ),
+        new WorkflowStep("/todos/2", 200),
+        new WorkflowStep("/todos/2", 200)
+          .onSuccess(successCallback)
+          .onFail(failCallback)
+          .validateHeaders(
+            (headers) =>
+              createExecutableSchema(
+                yxc
+                  .object({
+                    "content-type": yxc.string().prefix("application/yaml;"),
+                  })
+                  .arbitrary(),
+              )(headers).errors,
+          ),
       ],
     },
     {

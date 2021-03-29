@@ -1,6 +1,7 @@
 import ava from "ava";
 import { runWorkflow } from "../src/runner";
 import sinon from "sinon";
+import { WorkflowStep } from "../src/workflow_step";
 
 ava.serial("Validate function", async (t) => {
   const callback = sinon.fake();
@@ -9,11 +10,9 @@ ava.serial("Validate function", async (t) => {
       title: "Google",
       baseUrl: "http://google.com",
       steps: [
-        {
-          url: "/",
-          status: 200,
-          method: "GET",
-          validate: ({ response }) => {
+        new WorkflowStep("/", 200)
+          .method("GET")
+          .validateResponse(({ response }) => {
             if (
               typeof response.data === "string" &&
               response.data.includes("window.google")
@@ -22,8 +21,7 @@ ava.serial("Validate function", async (t) => {
               return true;
             }
             throw new Error("Not google home page");
-          },
-        },
+          }),
       ],
     },
     {
@@ -48,11 +46,9 @@ ava.serial("Validate function -> fail", async (t) => {
       title: "Google",
       baseUrl: "http://google.com",
       steps: [
-        {
-          url: "/",
-          status: 200,
-          method: "HEAD",
-          validate: ({ response }) => {
+        new WorkflowStep("/", 200)
+          .method("HEAD")
+          .validateResponse(({ response }) => {
             if (
               typeof response.data === "string" &&
               response.data.includes("window.google")
@@ -61,8 +57,7 @@ ava.serial("Validate function -> fail", async (t) => {
             }
             callback();
             throw new Error("Not google home page");
-          },
-        },
+          }),
       ],
     },
     {

@@ -50,6 +50,16 @@ async function testFiles(files: Array<string>) {
   return failed;
 }
 
+async function loadConfig(configPath: string): Promise<IConfig> {
+  log(`Checking config @ ${configPath}`);
+  if (existsSync(configPath)) {
+    log(`Found config @ ${configPath}, importing...`);
+    return getConfig(configPath);
+  }
+  log(`No config file found (config: ${configPath})`);
+  return { hooks: undefined };
+}
+
 async function main() {
   log("Entry point");
   register();
@@ -59,15 +69,7 @@ async function main() {
   const configPath = resolve(args.config);
   log({ configPath });
 
-  const config: IConfig = await (async () => {
-    log(`Checking config @ ${configPath}`);
-    if (existsSync(configPath)) {
-      log(`Found config @ ${configPath}, importing...`);
-      return getConfig(configPath);
-    }
-    log(`No config file found (config: ${configPath})`);
-    return { hooks: undefined };
-  })();
+  const config = await loadConfig(configPath);
 
   if (config.hooks?.before) {
     log("Running before hook");

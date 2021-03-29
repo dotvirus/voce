@@ -1,6 +1,7 @@
 import ava from "ava";
 import { runWorkflow } from "../src/runner";
 import sinon from "sinon";
+import { WorkflowStep } from "../src/workflow_step";
 
 ava.serial("Google test", async (t) => {
   const successCallback = sinon.fake();
@@ -10,16 +11,8 @@ ava.serial("Google test", async (t) => {
       title: "Google",
       baseUrl: "http://google.com",
       steps: [
-        {
-          url: "/",
-          status: 200,
-          method: "HEAD",
-        },
-        {
-          url: () => "/",
-          status: 200,
-          method: "HEAD",
-        },
+        new WorkflowStep("/", 200).method("HEAD"),
+        new WorkflowStep(() => "/", 200).method("HEAD"),
       ],
       onSuccess: successCallback,
       onFail: failCallback,
