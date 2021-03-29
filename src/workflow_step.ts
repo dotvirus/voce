@@ -1,4 +1,5 @@
 import { IHaxanResponse } from "haxan";
+
 import { IRunnerContext } from "./runner";
 
 export type ValidatorFunction<T> = (body: T) => unknown;

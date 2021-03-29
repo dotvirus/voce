@@ -1,9 +1,7 @@
-// import { AnyHandler, Handler } from "@dotvirus/yxc";
 import chalk from "chalk";
 import haxan from "haxan";
 import ora from "ora";
 import { relative, resolve } from "path";
-// import variableDiff from "variable-diff";
 
 import args from "./args";
 import log from "./log";
@@ -23,21 +21,6 @@ function resolveIfFunction<T>(val: CaptureUnion<T>): T {
   }
   return val;
 }
-
-// function resolveTestDefinitionData(data: unknown): Handler {
-//   const val = resolveIfFunction(data);
-//   if (val instanceof Handler) {
-//     return val;
-//   } else {
-//     return new AnyHandler().rule((v) => {
-//       const result = variableDiff(v, val);
-//       if (result.changed) {
-//         console.error(result.text);
-//       }
-//       return !result.changed;
-//     });
-//   }
-// }
 
 async function requireWorkflow(
   file: string,
