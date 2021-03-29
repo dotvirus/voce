@@ -17,8 +17,11 @@ export class WorkflowStep {
   _todo = false;
   _skip = false;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _bodyValidator?: ValidatorFunction<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _headersValidator?: ValidatorFunction<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _responseValidator?: ValidatorFunction<any>;
 
   _onBefore?: (ctx: IRunnerContext & { step: WorkflowStep }) => unknown;
