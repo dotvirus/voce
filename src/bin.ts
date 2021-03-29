@@ -1,13 +1,13 @@
-import { resolve } from "path";
+import { existsSync } from "fs";
 import glob from "glob";
+import { resolve } from "path";
 
 import args from "./args";
+import { getConfig, IConfig } from "./config";
 import { evaluateResult, TestResult } from "./evaluator";
 import log from "./log";
 import { runFiles } from "./runner";
 import { getMissingFiles } from "./util";
-import { existsSync } from "fs";
-import { getConfig, IConfig } from "./config";
 
 function register() {
   if (args.register.length) {

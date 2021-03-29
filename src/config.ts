@@ -1,4 +1,5 @@
 import yxc, { createExecutableSchema, Infer } from "@dotvirus/yxc";
+
 import log from "./log";
 import { functionType } from "./util";
 

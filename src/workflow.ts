@@ -1,9 +1,9 @@
-import { IHaxanResponse } from "haxan";
 import yxc, {
   createExecutableSchema,
   Handler,
   ObjectHandler,
 } from "@dotvirus/yxc";
+import { IHaxanResponse } from "haxan";
 
 import { IRunnerContext } from "./runner";
 import { functionType } from "./util";

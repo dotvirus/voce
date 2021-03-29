@@ -1,4 +1,4 @@
-import { Handler, AnyHandler, createExecutableSchema } from "@dotvirus/yxc";
+import { AnyHandler, createExecutableSchema, Handler } from "@dotvirus/yxc";
 import chalk from "chalk";
 import haxan from "haxan";
 import ora from "ora";
