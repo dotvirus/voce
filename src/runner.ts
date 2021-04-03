@@ -7,7 +7,7 @@ import args from "./args";
 import log from "./log";
 import { percentFormatter } from "./util";
 import { Workflow } from "./workflow";
-import { CaptureUnion } from "./workflow_step";
+import { ValueGetter } from "./workflow_step";
 
 export interface IRunnerContext {
   index: number;
@@ -15,7 +15,7 @@ export interface IRunnerContext {
   file: string;
 }
 
-function resolveIfFunction<T>(val: CaptureUnion<T>): T {
+function resolveIfFunction<T>(val: ValueGetter<T>): T {
   if (typeof val === "function") {
     return (val as () => T)();
   }

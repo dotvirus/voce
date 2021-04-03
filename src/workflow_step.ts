@@ -3,16 +3,16 @@ import { IHaxanResponse } from "haxan";
 import { IRunnerContext } from "./runner";
 
 export type ValidatorFunction<T> = (body: T) => unknown;
-export type CaptureUnion<T> = T | (() => T);
+export type ValueGetter<T> = T | (() => T);
 
 export class WorkflowStep {
   _title?: string;
-  _url: CaptureUnion<string>;
-  _method: CaptureUnion<string> = "GET";
+  _url: ValueGetter<string>;
+  _method: ValueGetter<string> = "GET";
   _status: number;
-  _query: CaptureUnion<Record<string, string>> = {};
-  _headers: CaptureUnion<Record<string, string>> = {};
-  _body?: CaptureUnion<unknown>;
+  _query: ValueGetter<Record<string, string>> = {};
+  _headers: ValueGetter<Record<string, string>> = {};
+  _body?: ValueGetter<unknown>;
 
   _todo = false;
   _skip = false;
@@ -44,7 +44,7 @@ export class WorkflowStep {
     },
   ) => unknown;
 
-  constructor(url: CaptureUnion<string>, status: number) {
+  constructor(url: ValueGetter<string>, status: number) {
     this._url = url;
     this._status = status;
   }
@@ -64,12 +64,12 @@ export class WorkflowStep {
     return this;
   }
 
-  query(query: CaptureUnion<Record<string, string>>): this {
+  query(query: ValueGetter<Record<string, string>>): this {
     this._query = query;
     return this;
   }
 
-  headers(headers: CaptureUnion<Record<string, string>>): this {
+  headers(headers: ValueGetter<Record<string, string>>): this {
     this._headers = headers;
     return this;
   }
