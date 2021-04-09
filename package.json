@@ -48,6 +48,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "nyc": "^15.1.0",
+    "sinon": "^10.0.1",
     "prettier": "^2.2.1",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
@@ -68,8 +69,6 @@
     "glob": "^7.1.6",
     "haxan": "0.2.1",
     "ora": "^5.4.0",
-    "sinon": "^10.0.1",
-    "variable-diff": "^2.0.2",
     "yargs": "^16.0.3"
   }
 }
