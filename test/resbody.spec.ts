@@ -1,6 +1,8 @@
 import ava from "ava";
 import { runWorkflow } from "../src/runner";
 import sinon from "sinon";
+import { WorkflowStep } from "../src/workflow_step";
+import yxc, { createSchema } from "@dotvirus/yxc";
 
 ava.serial("Response body & headers test", async (t) => {
   const successCallback = sinon.fake();
@@ -10,38 +12,32 @@ ava.serial("Response body & headers test", async (t) => {
       title: "JSON placeholder",
       baseUrl: "https://jsonplaceholder.typicode.com",
       steps: [
-        {
-          url: "/todos/1",
-          status: 200,
-        },
-        {
-          url: "/todos/1",
-          status: 200,
-          resBody: {
-            userId: 1,
-            id: 1,
-            title: "delectus aut autem",
-            completed: false,
-          },
-          onSuccess: successCallback,
-          onFail: failCallback,
-        },
-        {
-          url: "/todos/2",
-          status: 200,
-        },
-        {
-          url: "/todos/2",
-          status: 200,
-          resBody: {
-            userId: 1,
-            id: 1,
-            title: "delectus aut autem",
-            completed: false,
-          },
-          onSuccess: successCallback,
-          onFail: failCallback,
-        },
+        new WorkflowStep("/todos/1", 200),
+        new WorkflowStep("/todos/1", 200)
+          .onSuccess(successCallback)
+          .onFail(failCallback)
+          .validateBody(
+            (resBody: unknown) =>
+              createSchema({
+                userId: yxc.number().eq(1),
+                id: yxc.number().eq(1),
+                title: yxc.string().eq("delectus aut autem"),
+                completed: yxc.boolean().false(),
+              })(resBody).errors,
+          ),
+        new WorkflowStep("/todos/2", 200),
+        new WorkflowStep("/todos/2", 200)
+          .onSuccess(successCallback)
+          .onFail(failCallback)
+          .validateBody(
+            (resBody: unknown) =>
+              createSchema({
+                userId: yxc.number().eq(1),
+                id: yxc.number().eq(1),
+                title: yxc.string().eq("delectus aut autem"),
+                completed: yxc.boolean().false(),
+              })(resBody).errors,
+          ),
       ],
     },
     {

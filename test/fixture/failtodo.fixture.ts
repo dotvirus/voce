@@ -1,16 +1,10 @@
-import { Workflow } from "../../src/workflow";
+import { defineWorkflow } from "../../src/workflow";
+import { WorkflowStep } from "../../src/workflow_step";
 
-export default function (_ctx: any): Workflow {
+export default defineWorkflow(() => {
   return {
     title: "Google",
     baseUrl: "https://google.com",
-    steps: [
-      {
-        todo: true,
-        url: () => "/",
-        status: 200,
-        method: "HEAD",
-      },
-    ],
+    steps: [new WorkflowStep(() => "/", 200).method("HEAD").todo()],
   };
-}
+});

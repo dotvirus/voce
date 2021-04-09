@@ -1,6 +1,7 @@
 import ava from "ava";
 import { runWorkflow } from "../src/runner";
 import sinon from "sinon";
+import { WorkflowStep } from "../src/workflow_step";
 
 ava.serial("Skip step", async (t) => {
   const callback = sinon.fake();
@@ -9,19 +10,8 @@ ava.serial("Skip step", async (t) => {
       title: "Google",
       baseUrl: "http://google.com",
       steps: [
-        {
-          url: "/",
-          status: 200,
-          method: "HEAD",
-          skip: true,
-          onAfter: callback,
-        },
-        {
-          url: () => "/",
-          status: 200,
-          method: "HEAD",
-          onAfter: callback,
-        },
+        new WorkflowStep("/", 200).method("HEAD").skip().onAfter(callback),
+        new WorkflowStep("/", 200).method("HEAD").onAfter(callback),
       ],
     },
     {

@@ -5,14 +5,19 @@ module.exports = {
     ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features
     sourceType: "module", // Allows for the use of imports
   },
-  plugins: ["@typescript-eslint"],
+  plugins: ["@typescript-eslint", "prettier", "simple-import-sort"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
+    "prettier",
   ],
   rules: {
     eqeqeq: "error",
     yoda: "error",
+
+    "prettier/prettier": "error",
+
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
   },
 };

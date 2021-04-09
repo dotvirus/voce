@@ -1,1 +1,2 @@
-export { defineWorkflow, WorkflowStep, Workflow } from "./workflow";
+export { defineWorkflow, Workflow } from "./workflow";
+export { WorkflowStep } from "./workflow_step";

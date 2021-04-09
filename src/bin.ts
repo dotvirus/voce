@@ -1,13 +1,13 @@
-import { resolve } from "path";
+import { existsSync } from "fs";
 import glob from "glob";
+import { resolve } from "path";
 
 import args from "./args";
+import { getConfig, IConfig } from "./config";
 import { evaluateResult, TestResult } from "./evaluator";
 import log from "./log";
 import { runFiles } from "./runner";
 import { getMissingFiles } from "./util";
-import { existsSync } from "fs";
-import { getConfig, IConfig } from "./config";
 
 function register() {
   if (args.register.length) {
@@ -50,6 +50,16 @@ async function testFiles(files: Array<string>) {
   return failed;
 }
 
+async function loadConfig(configPath: string): Promise<IConfig> {
+  log(`Checking config @ ${configPath}`);
+  if (existsSync(configPath)) {
+    log(`Found config @ ${configPath}, importing...`);
+    return getConfig(configPath);
+  }
+  log(`No config file found (config: ${configPath})`);
+  return { hooks: undefined };
+}
+
 async function main() {
   log("Entry point");
   register();
@@ -59,15 +69,7 @@ async function main() {
   const configPath = resolve(args.config);
   log({ configPath });
 
-  const config: IConfig = await (async () => {
-    log(`Checking config @ ${configPath}`);
-    if (existsSync(configPath)) {
-      log(`Found config @ ${configPath}, importing...`);
-      return getConfig(configPath);
-    }
-    log(`No config file found (config: ${configPath})`);
-    return { hooks: undefined };
-  })();
+  const config = await loadConfig(configPath);
 
   if (config.hooks?.before) {
     log("Running before hook");

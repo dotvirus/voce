@@ -19,9 +19,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run coverage
+      - run: yarn install
+      - run: yarn lint
+      - run: yarn coverage
       - uses: codecov/codecov-action@v1
         with:
           file: ./coverage/coverage-final.json # optional
