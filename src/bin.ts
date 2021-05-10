@@ -86,4 +86,7 @@ async function main() {
   process.exit(failed);
 }
 
-main();
+main().catch((err) => {
+  console.error(`FATAL error: ${err.message}`);
+  process.exit(1);
+});
