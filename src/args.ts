@@ -1,6 +1,6 @@
 import yargs = require("yargs");
 
-export const version = "1.0.0";
+export const version = "1.0.1";
 
 export default yargs
   .scriptName("voce")
