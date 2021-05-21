@@ -299,8 +299,8 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.4.tgz#f0ec25dbf2f0e4b18647313ac031134ca5b24b21"
 
 "@types/node@*", "@types/node@^15.0.0":
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.0.0.tgz#557dd0da4a6dca1407481df3bbacae0cd6f68042"
+  version "15.3.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.3.0.tgz#d6fed7d6bc6854306da3dea1af9f874b00783e26"
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -323,11 +323,11 @@
     "@types/yargs-parser" "*"
 
 "@typescript-eslint/eslint-plugin@^4.19.0":
-  version "4.22.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.22.0.tgz#3d5f29bb59e61a9dba1513d491b059e536e16dbc"
+  version "4.24.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.24.0.tgz#03801ffc25b2af9d08f3dc9bccfc0b7ce3780d0f"
   dependencies:
-    "@typescript-eslint/experimental-utils" "4.22.0"
-    "@typescript-eslint/scope-manager" "4.22.0"
+    "@typescript-eslint/experimental-utils" "4.24.0"
+    "@typescript-eslint/scope-manager" "4.24.0"
     debug "^4.1.1"
     functional-red-black-tree "^1.0.1"
     lodash "^4.17.15"
@@ -335,32 +335,25 @@
     semver "^7.3.2"
     tsutils "^3.17.1"
 
-"@typescript-eslint/experimental-utils@4.22.0":
-  version "4.22.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-4.22.0.tgz#68765167cca531178e7b650a53456e6e0bef3b1f"
+"@typescript-eslint/experimental-utils@4.24.0":
+  version "4.24.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-4.24.0.tgz#c23ead9de44b99c3a5fd925c33a106b00165e172"
   dependencies:
     "@types/json-schema" "^7.0.3"
-    "@typescript-eslint/scope-manager" "4.22.0"
-    "@typescript-eslint/types" "4.22.0"
-    "@typescript-eslint/typescript-estree" "4.22.0"
+    "@typescript-eslint/scope-manager" "4.24.0"
+    "@typescript-eslint/types" "4.24.0"
+    "@typescript-eslint/typescript-estree" "4.24.0"
     eslint-scope "^5.0.0"
     eslint-utils "^2.0.0"
 
 "@typescript-eslint/parser@^4.19.0":
-  version "4.22.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-4.22.0.tgz#e1637327fcf796c641fe55f73530e90b16ac8fe8"
+  version "4.24.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-4.24.0.tgz#2e5f1cc78ffefe43bfac7e5659309a92b09a51bd"
   dependencies:
-    "@typescript-eslint/scope-manager" "4.22.0"
-    "@typescript-eslint/types" "4.22.0"
-    "@typescript-eslint/typescript-estree" "4.22.0"
+    "@typescript-eslint/scope-manager" "4.24.0"
+    "@typescript-eslint/types" "4.24.0"
+    "@typescript-eslint/typescript-estree" "4.24.0"
     debug "^4.1.1"
-
-"@typescript-eslint/scope-manager@4.19.0":
-  version "4.19.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-4.19.0.tgz#5e0b49eca4df7684205d957c9856f4e720717a4f"
-  dependencies:
-    "@typescript-eslint/types" "4.19.0"
-    "@typescript-eslint/visitor-keys" "4.19.0"
 
 "@typescript-eslint/scope-manager@4.22.0":
   version "4.22.0"
@@ -369,25 +362,20 @@
     "@typescript-eslint/types" "4.22.0"
     "@typescript-eslint/visitor-keys" "4.22.0"
 
-"@typescript-eslint/types@4.19.0":
-  version "4.19.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-4.19.0.tgz#5181d5d2afd02e5b8f149ebb37ffc8bd7b07a568"
+"@typescript-eslint/scope-manager@4.24.0":
+  version "4.24.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-4.24.0.tgz#38088216f0eaf235fa30ed8cabf6948ec734f359"
+  dependencies:
+    "@typescript-eslint/types" "4.24.0"
+    "@typescript-eslint/visitor-keys" "4.24.0"
 
 "@typescript-eslint/types@4.22.0":
   version "4.22.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-4.22.0.tgz#0ca6fde5b68daf6dba133f30959cc0688c8dd0b6"
 
-"@typescript-eslint/typescript-estree@4.19.0":
-  version "4.19.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-4.19.0.tgz#8a709ffa400284ab72df33376df085e2e2f61147"
-  dependencies:
-    "@typescript-eslint/types" "4.19.0"
-    "@typescript-eslint/visitor-keys" "4.19.0"
-    debug "^4.1.1"
-    globby "^11.0.1"
-    is-glob "^4.0.1"
-    semver "^7.3.2"
-    tsutils "^3.17.1"
+"@typescript-eslint/types@4.24.0":
+  version "4.24.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-4.24.0.tgz#6d0cca2048cbda4e265e0c4db9c2a62aaad8228c"
 
 "@typescript-eslint/typescript-estree@4.22.0":
   version "4.22.0"
@@ -401,18 +389,30 @@
     semver "^7.3.2"
     tsutils "^3.17.1"
 
-"@typescript-eslint/visitor-keys@4.19.0":
-  version "4.19.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-4.19.0.tgz#cbea35109cbd9b26e597644556be4546465d8f7f"
+"@typescript-eslint/typescript-estree@4.24.0":
+  version "4.24.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-4.24.0.tgz#b49249679a98014d8b03e8d4b70864b950e3c90f"
   dependencies:
-    "@typescript-eslint/types" "4.19.0"
-    eslint-visitor-keys "^2.0.0"
+    "@typescript-eslint/types" "4.24.0"
+    "@typescript-eslint/visitor-keys" "4.24.0"
+    debug "^4.1.1"
+    globby "^11.0.1"
+    is-glob "^4.0.1"
+    semver "^7.3.2"
+    tsutils "^3.17.1"
 
 "@typescript-eslint/visitor-keys@4.22.0":
   version "4.22.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-4.22.0.tgz#169dae26d3c122935da7528c839f42a8a42f6e47"
   dependencies:
     "@typescript-eslint/types" "4.22.0"
+    eslint-visitor-keys "^2.0.0"
+
+"@typescript-eslint/visitor-keys@4.24.0":
+  version "4.24.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-4.24.0.tgz#a8fafdc76cad4e04a681a945fbbac4e35e98e297"
+  dependencies:
+    "@typescript-eslint/types" "4.24.0"
     eslint-visitor-keys "^2.0.0"
 
 acorn-jsx@^5.3.1:
@@ -2194,8 +2194,8 @@ prettier-linter-helpers@^1.0.0:
     fast-diff "^1.1.2"
 
 prettier@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.2.1.tgz#795a1a78dd52f073da0cd42b21f9c91381923ff5"
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.3.0.tgz#b6a5bf1284026ae640f17f7ff5658a7567fc0d18"
 
 pretty-ms@^7.0.1:
   version "7.0.1"
@@ -2843,9 +2843,21 @@ yargs@^15.0.2:
     y18n "^4.0.0"
     yargs-parser "^18.1.2"
 
-yargs@^16.0.3, yargs@^16.2.0:
+yargs@^16.2.0:
   version "16.2.0"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-16.2.0.tgz#1c82bf0f6b6a66eafce7ef30e376f49a12477f66"
+  dependencies:
+    cliui "^7.0.2"
+    escalade "^3.1.1"
+    get-caller-file "^2.0.5"
+    require-directory "^2.1.1"
+    string-width "^4.2.0"
+    y18n "^5.0.5"
+    yargs-parser "^20.2.2"
+
+yargs@^17.0.1:
+  version "17.0.1"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.0.1.tgz#6a1ced4ed5ee0b388010ba9fd67af83b9362e0bb"
   dependencies:
     cliui "^7.0.2"
     escalade "^3.1.1"
