@@ -49,6 +49,11 @@ export class WorkflowStep {
     this._status = status;
   }
 
+  body(body: unknown): this {
+    this._body = body;
+    return this;
+  }
+
   title(title: string): this {
     this._title = title;
     return this;
