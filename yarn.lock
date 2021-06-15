@@ -1418,9 +1418,9 @@ hasha@^5.0.0:
     is-stream "^2.0.0"
     type-fest "^0.8.0"
 
-haxan@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/haxan/-/haxan-0.2.1.tgz#9810da9796ef05faec4962b564b62225c7bda3a2"
+haxan@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/haxan/-/haxan-0.3.0.tgz#838b2aa5b439d82b6342f666d65e8b2bf7e7507b"
   dependencies:
     node-fetch "^2.6.1"
 
