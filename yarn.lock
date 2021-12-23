@@ -354,9 +354,9 @@
   version "20.2.0"
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-20.2.0.tgz#dd3e6699ba3237f0348cd085e4698780204842f9"
 
-"@types/yargs@^16.0.0":
-  version "16.0.1"
-  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-16.0.1.tgz#5fc5d41f69762e00fbecbc8d4bf9dea47d8726f4"
+"@types/yargs@^17.0.8":
+  version "17.0.8"
+  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-17.0.8.tgz#d23a3476fd3da8a0ea44b5494ca7fa677b9dad4c"
   dependencies:
     "@types/yargs-parser" "*"
 
