@@ -1,7 +1,7 @@
 import ava from "ava";
 import { runWorkflow } from "../src/runner";
 import sinon from "sinon";
-import yxc, { createExecutableSchema } from "@dotvirus/yxc";
+import * as z from "zod";
 import { WorkflowStep } from "../src/workflow_step";
 
 ava.serial("Response body & headers test", async (t) => {
@@ -16,30 +16,30 @@ ava.serial("Response body & headers test", async (t) => {
         new WorkflowStep("/todos/1", 200)
           .onSuccess(successCallback)
           .onFail(failCallback)
-          .validateHeaders(
-            (headers) =>
-              createExecutableSchema(
-                yxc
-                  .object({
-                    "content-type": yxc.string().prefix("application/json;"),
-                  })
-                  .arbitrary(),
-              )(headers).errors,
-          ),
+          .validateHeaders((headers) => {
+            const result = z
+              .object({
+                "content-type": z
+                  .string()
+                  .refine((x) => x.startsWith("application/json;")),
+              })
+              .safeParse(headers);
+            return result.success;
+          }),
         new WorkflowStep("/todos/2", 200),
         new WorkflowStep("/todos/2", 200)
           .onSuccess(successCallback)
           .onFail(failCallback)
-          .validateHeaders(
-            (headers) =>
-              createExecutableSchema(
-                yxc
-                  .object({
-                    "content-type": yxc.string().prefix("application/yaml;"),
-                  })
-                  .arbitrary(),
-              )(headers).errors,
-          ),
+          .validateHeaders((headers) => {
+            const result = z
+              .object({
+                "content-type": z
+                  .string()
+                  .refine((x) => x.startsWith("application/yaml;")),
+              })
+              .safeParse(headers);
+            return result.success;
+          }),
       ],
     },
     {

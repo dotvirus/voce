@@ -2,11 +2,12 @@ import ava from "ava";
 import { runWorkflow } from "../src/runner";
 import sinon from "sinon";
 import { WorkflowStep } from "../src/workflow_step";
-import yxc, { createSchema } from "@dotvirus/yxc";
+import * as z from "zod";
 
 ava.serial("Response body & headers test", async (t) => {
   const successCallback = sinon.fake();
   const failCallback = sinon.fake();
+
   const result = await runWorkflow(
     {
       title: "JSON placeholder",
@@ -16,28 +17,32 @@ ava.serial("Response body & headers test", async (t) => {
         new WorkflowStep("/todos/1", 200)
           .onSuccess(successCallback)
           .onFail(failCallback)
-          .validateBody(
-            (resBody: unknown) =>
-              createSchema({
-                userId: yxc.number().eq(1),
-                id: yxc.number().eq(1),
-                title: yxc.string().eq("delectus aut autem"),
-                completed: yxc.boolean().false(),
-              })(resBody).errors,
-          ),
+          .validateBody((body) => {
+            const result = z
+              .object({
+                userId: z.number(),
+                id: z.number(),
+                title: z.string(),
+                completed: z.boolean(),
+              })
+              .safeParse(body);
+            return result.success;
+          }),
         new WorkflowStep("/todos/2", 200),
         new WorkflowStep("/todos/2", 200)
           .onSuccess(successCallback)
           .onFail(failCallback)
-          .validateBody(
-            (resBody: unknown) =>
-              createSchema({
-                userId: yxc.number().eq(1),
-                id: yxc.number().eq(1),
-                title: yxc.string().eq("delectus aut autem"),
-                completed: yxc.boolean().false(),
-              })(resBody).errors,
-          ),
+          .validateBody((body) => {
+            const result = z
+              .object({
+                userId: z.number(),
+                id: z.number(),
+                title: z.string(),
+                completed: z.string(), // This will fail
+              })
+              .safeParse(body);
+            return result.success;
+          }),
       ],
     },
     {
@@ -46,6 +51,7 @@ ava.serial("Response body & headers test", async (t) => {
       numWorkflows: 1,
     },
   );
+
   t.deepEqual(result, {
     numFailed: 1,
     numSkipped: 0,

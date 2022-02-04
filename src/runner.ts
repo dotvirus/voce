@@ -225,7 +225,7 @@ export async function runWorkflow(
         } else {
           log("Res headers OK");
         }
-      } catch (error) {
+      } catch (error: any) {
         await failTest(
           `Response headers not as expected: ${JSON.stringify(
             error.message || error,
@@ -258,7 +258,7 @@ export async function runWorkflow(
         } else {
           log("Response OK");
         }
-      } catch (error) {
+      } catch (error: any) {
         await failTest(
           `Response validator failed: ${JSON.stringify(
             error.message || error,

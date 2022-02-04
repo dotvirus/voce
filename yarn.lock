@@ -195,10 +195,6 @@
   dependencies:
     "@cspotcode/source-map-consumer" "0.8.0"
 
-"@dotvirus/yxc@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@dotvirus/yxc/-/yxc-2.0.3.tgz#4dd7603077f2e25eece36f4c0a1a1ba9e416ccff"
-
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-0.4.3.tgz#9e42981ef035beb3dd49add17acb96e8ff6f394c"
@@ -2875,3 +2871,7 @@ yargs@^17.0.1:
 yn@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
+
+zod@^3.11.6:
+  version "3.11.6"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.11.6.tgz#e43a5e0c213ae2e02aefe7cb2b1a6fa3d7f1f483"

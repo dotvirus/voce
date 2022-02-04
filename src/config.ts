@@ -1,18 +1,17 @@
-import yxc, { createExecutableSchema, Infer } from "@dotvirus/yxc";
+import * as z from "zod";
 
 import log from "./log";
-import { functionType } from "./util";
 
-const configSchema = yxc.object({
-  hooks: yxc
+const configSchema = z.object({
+  hooks: z
     .object({
-      before: functionType().optional(),
-      after: functionType().optional(),
+      before: z.function().optional(),
+      after: z.function().optional(),
     })
     .optional(),
 });
 
-export type IConfig = Infer<typeof configSchema>;
+export type IConfig = z.TypeOf<typeof configSchema>;
 
 export async function getConfig(path: string): Promise<IConfig> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -20,12 +19,13 @@ export async function getConfig(path: string): Promise<IConfig> {
 
   log(module);
 
-  const { ok, errors } = createExecutableSchema(configSchema)(module);
+  const result = configSchema.safeParse(module);
 
-  if (ok) {
+  if (result.success) {
     return module;
   }
+
   console.error(`Invalid voce config: ${path}`);
-  console.error(errors);
+  console.error(JSON.stringify(result.error, null, 2));
   process.exit(1);
 }

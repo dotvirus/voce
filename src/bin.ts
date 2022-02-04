@@ -1,5 +1,4 @@
 import { existsSync } from "fs";
-import glob from "glob";
 import { resolve } from "path";
 
 import args from "./args";
@@ -7,7 +6,7 @@ import { getConfig, IConfig } from "./config";
 import { evaluateResult, TestResult } from "./evaluator";
 import log from "./log";
 import { runFiles } from "./runner";
-import { getMissingFiles } from "./util";
+import { fileVisitor, getMissingFiles } from "./util";
 
 function register() {
   if (args.register.length) {
@@ -18,14 +17,17 @@ function register() {
   }
 }
 
-async function testFiles(files: Array<string>) {
-  if (!Array.isArray(files) || !files.length) {
+async function testFiles(globExpressions: Array<string>) {
+  if (!Array.isArray(globExpressions) || !globExpressions.length) {
     console.error("No input files");
     return TestResult.Failed;
   }
 
-  // Resolve globs
-  files = files.flatMap((x) => glob.sync(x)).map((x) => resolve(x));
+  let files: string[] = [];
+  for await (const path of fileVisitor(globExpressions)) {
+    files.push(path);
+  }
+
   // Ensure paths are unique
   files = [...new Set(files)];
 
