@@ -48,7 +48,7 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
-    "sinon": "9",
+    "sinon": "14",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.2.3"
